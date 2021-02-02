@@ -1,0 +1,16 @@
+#!/bin/bash
+#PBS -l walltime=50:00:00
+#PBS -l select=12:ncpus=30:mpiprocs=30:mem=370GB
+#PBS -N job-monofonic
+source ~/.bashrc
+export simnm=cdm_300M_1024_p18 rund=r1 seed=8899
+dir_mono=$HOME/cosmo-sims/monofonic/
+dir_sim=$dir_mono/$simnm/
+mkdir -p $dir_sim
+cd $dir_sim
+
+$dir_mono/write-param.sh
+export OMP_NUM_THREADS=32
+module load intel-2019.5
+mpirun -np 360 -machinefile $PBS_NODEFILE monofonIC $dir_sim/param_$rund.txt
+

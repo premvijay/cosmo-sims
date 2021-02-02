@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -l walltime=50:00:00
+#PBS -l select=15:ncpus=32:mpiprocs=32:mem=370GB
+#PBS -N job-gadget4
+set -e
+export simnm=cdm_200M_512_p18 rund=r1
+dir_root=$HOME/cosmo-sims/gadget4/
+dir_sim=$dir_root/$simnm/
+mkdir -p $dir_sim
+# $dir_root/compile.sh
+$dir_root/write-param.sh
+mpirun -np 480 -machinefile $PBS_NODEFILE $dir_sim/Gadget4 $dir_sim/param_$rund.txt
