@@ -6,7 +6,7 @@ job-*.e6*
 job-*.o6*
 monofonic/*/input_powerspec.txt
 monofonic/*/input_transfer.txt
-param_r1.txt
-param_r2.txt
+# param_r1.txt
+# param_r2.txt
 gadget4/*/param_r1.txt-usedvalues
-*.info
+# *.info
