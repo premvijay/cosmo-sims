@@ -1,37 +1,12 @@
-#!/bin/bash
-# Om0=0.3063375
-# OmL=0.6936625
-# Omb=0.0484103
-# h_par=0.6781
-# sig8=0.815
-# ns=0.9677
-# z_in=24
-# boxsize=200.0
-# Npart=512
-# seed=8888
-# cosmology=p18
-echo $2
-eval "$2"
-
-dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
-dir_ics=$dir_sim_data/ics/
-
-dir_camb=/mnt/home/student/cprem/cosmo-sims/camb/
-trans_file=$dir_camb/${cosmo}_transfer_out.dat
-
-mkdir -p $dir_ics
-
-H0=$(python -c "print($h_par*100)")
-
-printf '%s\n' "[setup]
+[setup]
 # number of grid cells per linear dimension for calculations = particles for sc initial load
-GridRes         = $Npart
+GridRes         = 512
 
 # length of the box in Mpc/h
-BoxLength       = $boxsize
+BoxLength       = 200
 
 # starting redshift
-zstart          = $z_in
+zstart          = 24
 
 # order of the LPT to be used (1,2 or 3)
 LPTorder        = 3
@@ -53,18 +28,18 @@ ParticleLoad    = sc
 # transfer        = eisenstein   # Eisenstein&Hu fitting formula
 
 transfer        = CAMB_file    # CAMB file to be specified as 'transfer_file = ...'
-transfer_file   = $trans_file
+transfer_file   = /mnt/home/student/cprem/cosmo-sims/camb//p18_transfer_out.dat
 
 # transfer        = CLASS          # CLASS module (if enabled in CMake file)
 
 # ztarget         = 2.5            # target redshift for CLASS module, output at ztarget will be back-scaled to zstart
 
-Omega_m         = $Om0
-Omega_L         = $OmL
-Omega_b         = $Omb
-H0              = $H0
-sigma_8         = $sig8
-nspec           = $ns
+Omega_m         = 0.3063375
+Omega_L         = 0.6936625
+Omega_b         = 0.0484103
+H0              = 67.81
+sigma_8         = 0.815
+nspec           = 0.9677
 # A_s             = 2.148752e-09 # can use instead of sigma_8
 
 ZeroRadiation   = true # For Back-scaling: set to false if your simulation code can deal with Omega_r!=0
@@ -72,7 +47,7 @@ ZeroRadiation   = true # For Back-scaling: set to false if your simulation code 
 [random]
 ## generator = ... specifies the random field generator plugin module
 generator       = NGENIC
-seed            = $seed
+seed            = 8899
 
 [execution]
 NumThreads      = 1
@@ -84,5 +59,4 @@ NumThreads      = 1
 ## format = .... specifies the output plugin module
 
 format          = gadget_hdf5
-filename        = $dir_ics/monofonic_${z_in}" > $1
-
+filename        = /scratch/cprem/sims/L200_N512_Cp18/r1//ics//monofonic_24

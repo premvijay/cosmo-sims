@@ -1,12 +1,17 @@
 #!/bin/bash
 #PBS -l walltime=50:00:00
-#PBS -l select=15:ncpus=32:mpiprocs=32:mem=370GB
+#PBS -l select=16:ncpus=32:mpiprocs=32:mem=370GB
 #PBS -N job-gadget4
 set -e
-export simnm=cdm_300M_1024_p18 rund=r1
+export simnm=${simnm:-L200_N256_Cp18} rund=${rund:-r1}
 dir_root=$HOME/cosmo-sims/gadget4/
 dir_sim=$dir_root/$simnm/
 mkdir -p $dir_sim
 # $dir_root/compile.sh
 $dir_root/write-param.sh
+dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
+dir_snap=$dir_sim_data/snaps/
+
+cd $dir_sim
 mpirun -np 480 -machinefile $PBS_NODEFILE $dir_sim/Gadget4 $dir_sim/param_$rund.txt
+hdf5_gadget4_to_2.sh "$dir_snap/snapdir_*/snapshot_*"
