@@ -1,0 +1,29 @@
+#!/bin/bash
+#PBS -l walltime=30:00:00
+#PBS -l select=16:ncpus=32:mpiprocs=32:mem=370GB
+#PBS -N job-velociraptor
+source ~/.bashrc
+cd $PBS_O_WORKDIR
+export dir_vrconf=$HOME/cosmo-sims/velociraptor/
+export simnm=${simnm:-L200_N256_Cp18} rund=${rund:-r1}
+export dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
+# echo Hello > hello1.txt
+mkdir -p ${dir_sim_data}/halos_vr
+# hdf5_gadget4_to_2.sh "snapdir_*/snapshot_*"
+# whereis mpirun >> hello.txt
+#mpirun -np 320 -machinefile $PBS_NODEFILE stf_p -i r2/snapdir_040/snapshot_040 -I 2 -o r2/halos_vr/out.040 -C sample_dmcosmological_6dfof_subhalo.cfg 2> stf.log
+# parallel -j 1  --sshloginfile $PBS_NODEFILE "cd $PBS_O_WORKDIR && source ~/.bashrc && hostname; echo {} | tee test.log" ::: {1..8}
+# echo "cd $PBS_O_WORKDIR && source ~/.bashrc && ~/bin/stf -i ${dir_sim_data}/snaps/snapdir_{1}/snapshot_{1} -I 2 -s 8 -o ${dir_sim_data}/halos_vr/out_{1} -C $dir_vrconf/sample_dmcosmological_6dfof_subhalo.cfg 2> stf.log"
+
+# parallel -j 1 --joblog "${PBS_JOBNAME}.p${PBS_JOBID%.*}"  --sshloginfile $PBS_NODEFILE "cd $PBS_O_WORKDIR && source ~/.bashrc && ~/bin/stf -i ${dir_sim_data}/snaps/snapdir_{1}/snapshot_{1} -I 2 -s 8 -o ${dir_sim_data}/halos_vr/out_{1} -C $dir_vrconf/sample_dmcosmological_6dfof_subhalo.cfg 2> stf.log" ::: {001..050}
+
+export OMP_NUM_THREADS=1
+module add hdf5_p/1.10.7
+
+for i in {000..050}
+do 
+    mpirun -np 512 -machinefile $PBS_NODEFILE ~/bin/stfp -i ${dir_sim_data}/snaps/snapdir_$i/snapshot_$i -I 2 -s 8 -Z 8 -o ${dir_sim_data}/halos_vr/out_$i -C $dir_vrconf/sample_dmcosmological_6dfof_subhalo.cfg 2> stf.log;
+done
+
+# ~/bin/stf -i ${dir_sim_data}/snaps/snapdir_{1}/snapshot_{1} -I 2 -s 8 -o ${dir_sim_data}/halos_vr/out_{1} -C $dir_vrconf/sample_dmcosmological_6dfof_subhalo.cfg 2> stf.log
+# ~/bin/stf -i ${dir_sim_data}/snaps/snapdir_{1}/snapshot_{1} -I 2 -s 8 -o ${dir_sim_data}/halos_vr/out_{1} -C $dir_vrconf/sample_dmcosmological_6dfof_subhalo.cfg 2> stf.log" ::: {001..050}

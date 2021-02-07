@@ -1,0 +1,17 @@
+#!/bin/bash
+#PBS -l walltime=30:00:00
+#PBS -l select=8:ncpus=32:mpiprocs=1:mem=370GB
+#PBS -N job-rockstar
+source ~/.bashrc
+cd $PBS_O_WORKDIR
+export dir_rsconf=$HOME/cosmo-sims/rockstar/
+export simnm=${simnm:-L200_N256_Cp18} rund=${rund:-r1}
+export dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
+# echo Hello > hello1.txt
+mkdir -p ${dir_sim_data}/halos_rs
+cd ${dir_sim_data}/halos_rs
+parallel -j 1 --sshloginfile $PBS_NODEFILE --joblog "$PBS_O_WORKDIR/${PBS_JOBNAME}.p${PBS_JOBID%.*}"  "cd ${dir_sim_data}/halos_rs; source ~/.bashrc; ~/bin/rockstar -c ${dir_sim_data}/halos_rs/auto-rockstar.cfg; echo {}" ::: {1..8}
+echo "cd ${dir_sim_data}/halos_rs; source ~/.bashrc; ~/bin/rockstar -c ${dir_sim_data}/halos_rs/auto-rockstar.cfg;"
+# sleep 10000
+
+
