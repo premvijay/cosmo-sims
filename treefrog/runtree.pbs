@@ -1,0 +1,22 @@
+#!/bin/bash
+#PBS -l walltime=30:00:00
+#PBS -l select=1:ncpus=32:mpiprocs=1:mem=370GB
+#PBS -N job-treefrog
+source ~/.bashrc
+cd $PBS_O_WORKDIR
+export dir_tfconf=$HOME/cosmo-sims/treefrog/
+export simnm=${simnm:-L200_N256_Cp18} rund=${rund:-r1} hald=${hald:-halos_vr_6d}
+export dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
+
+# dir_snap=$dir_sim_data/snaps/
+
+# echo Hello > hello1.txt
+mkdir -p ${dir_sim_data}/$hald/tree
+
+printf "%s\n"  ${dir_sim_data}/$hald/out_{000..050} > ${dir_sim_data}/$hald/tree/snapvr_list.txt
+
+export OMP_NUM_THREADS=32
+
+# mpirun -np 8 -machinefile $PBS_NODEFILE treefrog -i ${dir_sim_data}/tree/snapvr_list.txt -I 2 -s 51 -o ${dir_sim_data}/tree/treefrog -C $dir_tfconf/treefrog_sample.configuration
+
+treefrog -i ${dir_sim_data}/$hald/tree/snapvr_list.txt -I 2 -s 51 -o ${dir_sim_data}/$hald/tree/treefrog -C $dir_tfconf/treefrog_sample.configuration
