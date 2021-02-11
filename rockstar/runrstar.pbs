@@ -20,7 +20,8 @@ rockstar -c ${dir_sim_data}/halos_rs/auto-rockstar.cfg
 # parallel -j 1 --sshloginfile $PBS_NODEFILE --joblog "$PBS_O_WORKDIR/${PBS_JOBNAME}.p${PBS_JOBID%.*}"  "cd ${dir_sim_data}/halos_rs; source ~/.bashrc; ~/bin/rockstar -c ${dir_sim_data}/halos_rs/auto-rockstar.cfg; echo {}" ::: {1..8}
 echo "cd ${dir_sim_data}/halos_rs; source ~/.bashrc; ~/bin/rockstar -c ${dir_sim_data}/halos_rs/auto-rockstar.cfg;"
 # sleep 100
-wait $rspid
+wait $rspid;
+L=$boxsize $dir_rsconf/get_parent_info.sh
 
 
 
