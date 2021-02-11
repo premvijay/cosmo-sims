@@ -41,7 +41,7 @@ Omega0		 0.3063375
 OmegaLambda	 0.6936625
 OmegaBaryon	 0.0484103
 HubbleParam	 0.6781
-BoxSize		 200.0
+BoxSize		 200
 Hubble 100.0
 
 % Output frequency
