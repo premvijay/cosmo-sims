@@ -13,5 +13,5 @@ dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
 dir_snap=$dir_sim_data/snaps/
 
 cd $dir_sim
-mpirun -np 480 -machinefile $PBS_NODEFILE $dir_sim/Gadget4 $dir_sim/param_$rund.txt
+mpirun -np 512 -machinefile $PBS_NODEFILE $dir_sim/Gadget4 $dir_sim/param_$rund.txt | tee out.log
 hdf5_gadget4_to_2.sh "$dir_snap/snapdir_*/snapshot_*"
