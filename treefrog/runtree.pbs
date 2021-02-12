@@ -5,7 +5,8 @@
 source ~/.bashrc
 cd $PBS_O_WORKDIR
 export dir_tfconf=$HOME/cosmo-sims/treefrog/
-export simnm=${simnm:-L200_N256_Cp18} rund=${rund:-r1} hald=${hald:-halos_vr}
+export simnm=${simnm:-L200_N256_Cp18} rund=${rund:-r1} space=${space:-6d}
+export hald=halos_vr_$space
 export dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
 
 # dir_snap=$dir_sim_data/snaps/
