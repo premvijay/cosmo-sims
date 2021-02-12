@@ -5,6 +5,7 @@
 source ~/.bashrc
 cd $PBS_O_WORKDIR
 export dir_vrconf=$HOME/cosmo-sims/velociraptor/
+cd $dir_vrconf;
 export simnm=${simnm:-L200_N256_Cp18} rund=${rund:-r1} space=${space:-6d}
 export dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
 # echo Hello > hello1.txt
@@ -21,12 +22,10 @@ mkdir -p ${dir_sim_data}/halos_vr_$space
 export OMP_NUM_THREADS=4
 module add hdf5_p/1.10.7
 
-date
-for i in {000..051}
+for i in {000..050}
 do 
     mpirun -np 64 -machinefile $PBS_NODEFILE ~/bin/stfp -i ${dir_sim_data}/snaps/snapdir_$i/snapshot_$i -I 2 -s 8 -Z 8 -o ${dir_sim_data}/halos_vr_${space}/out_$i -C $dir_vrconf/sample_dmcosmological_${space}fof_subhalo.cfg 2> stf.log;
 done
-date
 
 # ~/bin/stf -i ${dir_sim_data}/snaps/snapdir_{1}/snapshot_{1} -I 2 -s 8 -o ${dir_sim_data}/halos_vr/out_{1} -C $dir_vrconf/sample_dmcosmological_6dfof_subhalo.cfg 2> stf.log
 # ~/bin/stf -i ${dir_sim_data}/snaps/snapdir_{1}/snapshot_{1} -I 2 -s 8 -o ${dir_sim_data}/halos_vr/out_{1} -C $dir_vrconf/sample_dmcosmological_6dfof_subhalo.cfg 2> stf.log" ::: {001..050}

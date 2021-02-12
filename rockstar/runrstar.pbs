@@ -11,6 +11,8 @@ export dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
 mkdir -p ${dir_sim_data}/halos_rs
 cd ${dir_sim_data}/halos_rs
 
+mkdir -p ${dir_rsconf}/$simnm
+
 ${dir_rsconf}/gen-param.sh ${dir_rsconf}/$simnm/param_$rund.txt
 rockstar -c ${dir_rsconf}/$simnm/param_$rund.txt 2> "$PBS_O_WORKDIR/${PBS_JOBNAME}.r${PBS_JOBID%.*}" &
 sleep 10
