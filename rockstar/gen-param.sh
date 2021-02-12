@@ -11,7 +11,7 @@ mkdir -p ${dir_sim_data}/halos_rs/
 
 printf '%s\n' "INBASE = $dir_snap
 FORCE_RES = 0.0065
-NUM_SNAPS = 51
+NUM_SNAPS = 21
 STARTING_SNAP = 0
 
 NUM_WRITERS = 32

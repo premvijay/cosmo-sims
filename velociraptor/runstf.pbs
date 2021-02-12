@@ -22,7 +22,7 @@ mkdir -p ${dir_sim_data}/halos_vr_$space
 export OMP_NUM_THREADS=4
 module add hdf5_p/1.10.7
 
-for i in {000..050}
+for i in {000..020}
 do 
     mpirun -np 64 -machinefile $PBS_NODEFILE ~/bin/stfp -i ${dir_sim_data}/snaps/snapdir_$i/snapshot_$i -I 2 -s 8 -Z 8 -o ${dir_sim_data}/halos_vr_${space}/out_$i -C $dir_vrconf/sample_dmcosmological_${space}fof_subhalo.cfg 2> stf.log;
 done

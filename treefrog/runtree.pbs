@@ -14,7 +14,7 @@ export dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
 # echo Hello > hello1.txt
 mkdir -p ${dir_sim_data}/$hald/tree
 
-printf "%s\n"  ${dir_sim_data}/$hald/out_{000..050} > ${dir_sim_data}/$hald/tree/snapvr_list.txt
+printf "%s\n"  ${dir_sim_data}/$hald/out_{000..020} > ${dir_sim_data}/$hald/tree/snapvr_list.txt
 
 export OMP_NUM_THREADS=32
 
