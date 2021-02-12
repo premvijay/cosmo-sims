@@ -66,9 +66,9 @@ Hubble 100.0
 
 % Output frequency
 
-%% start at redshift 10 
-TimeBetSnapshot		1.04712854805
-TimeOfFirstSnapshot	0.1
+%% start at redshift 4
+TimeBetSnapshot		1.08379838673
+TimeOfFirstSnapshot	0.2
 
 
 CpuTimeBetRestartFile     1800.0    % here in seconds
