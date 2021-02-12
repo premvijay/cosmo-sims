@@ -10,11 +10,23 @@ cd $dir_root
 
 create-siminfo.sh $1 $2 $3 $4 $5
 
+gadget4/compile.sh
+
+seeds=(2222 3333 4444 5555)
+runds=(r2 r3 r4 r5)
+
+for i in {0..3};
+do
+export rund=${runds[i]} seed=${seeds[i]};
+create-siminfo.sh $1 $2 $3 $rund $seed
+
 jidmono=$(qsub monofonic/comp_ics.pbs -v "simnm=$simnm,rund=$rund,seed=$seed")
 
-gadget4/compile.sh
 jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund"  -W depend=afterok:${jidmono%.*})
 
 jidvr=$(qsub velociraptor/runstf.pbs -v "simnm=$simnm,rund=$rund,space=6d"  -W depend=afterok:${jidgad%.*})
-# qsub velociraptor/runstf.pbs -v "simnm=$simnm,rund=$rund,space=3d"
 jidrs=$(qsub rockstar/runrstar.pbs -v "simnm=$simnm,rund=$rund"  -W depend=afterok:${jidgad%.*})
+
+jidtf=$(qsub treefrog/runtree.pbs -v "simnm=$simnm,rund=$rund,space=6d"  -W depend=afterok:${jidvr%.*});
+
+done;
