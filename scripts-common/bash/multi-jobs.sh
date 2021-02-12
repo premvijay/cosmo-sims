@@ -12,13 +12,13 @@ create-siminfo.sh $1 $2 $3 $4 $5
 
 gadget4/compile.sh
 
-seeds=(2222 3333 4444 5555)
-runds=(r2 r3 r4 r5)
+seeds=(4444 5555 6666 7777)
+runds=(r4 r5 r6 r7)
 
 for i in {0..3};
 do
 export rund=${runds[i]} seed=${seeds[i]};
-create-siminfo.sh $1 $2 $3 $rund $seed
+create-siminfo.sh $1 $2 $3 $rund $5
 
 jidmono=$(qsub monofonic/comp_ics.pbs -v "simnm=$simnm,rund=$rund,seed=$seed")
 
