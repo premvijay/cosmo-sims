@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -l walltime=50:00:00
-#PBS -l select=8:ncpus=30:mpiprocs=30:mem=370GB
+#PBS -l select=8:ncpus=30:mpiprocs=1:mem=370GB
 #PBS -N job-monofonic
 source ~/.bashrc
 
@@ -24,4 +24,5 @@ export OMP_NUM_THREADS=32
 mpirun -np 8 -machinefile $PBS_NODEFILE monofonIC $dir_sim/param_$rund.txt
 
 cd $dir_ics
-for f in monofonic_*.*; do mv "$f" "$f.hdf5"; done
+shopt -s extglob
+for f in !(*.hdf5); do mv "$f" "$f.hdf5"; done
