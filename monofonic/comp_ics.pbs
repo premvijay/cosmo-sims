@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -l walltime=50:00:00
-#PBS -l select=12:ncpus=30:mpiprocs=30:mem=370GB
+#PBS -l select=8:ncpus=30:mpiprocs=30:mem=370GB
 #PBS -N job-monofonic
 source ~/.bashrc
 
@@ -20,7 +20,8 @@ module load intel-2019.5
 echo $dir_sim/param_$rund.txt
 cd $dir_sim
 # module load hdf5_p/1.10.7
-mpirun -np 360 -machinefile $PBS_NODEFILE monofonIC $dir_sim/param_$rund.txt
+export OMP_NUM_THREADS=32
+mpirun -np 8 -machinefile $PBS_NODEFILE monofonIC $dir_sim/param_$rund.txt
 
 cd $dir_ics
 for f in monofonic_*.*; do mv "$f" "$f.hdf5"; done

@@ -75,7 +75,7 @@ generator       = NGENIC
 seed            = $seed
 
 [execution]
-NumThreads      = 1
+NumThreads      = 32
 
 
 #########################################################################################
