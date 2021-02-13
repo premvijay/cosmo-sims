@@ -5,6 +5,7 @@ gadget4/*/compile.log
 job-*.e6*
 job-*.o6*
 job-*.p6*
+job-*.r6*
 monofonic/*/input_powerspec.txt
 monofonic/*/input_transfer.txt
 # param_r1.txt
@@ -14,3 +15,4 @@ gadget4/*/param_r1.txt-usedvalues
 velociraptor/stf.log
 */hello.txt
 tmp/
+*.log
