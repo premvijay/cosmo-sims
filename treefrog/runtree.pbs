@@ -20,4 +20,4 @@ export OMP_NUM_THREADS=32
 
 # mpirun -np 8 -machinefile $PBS_NODEFILE treefrog -i ${dir_sim_data}/tree/snapvr_list.txt -I 2 -s 51 -o ${dir_sim_data}/tree/treefrog -C $dir_tfconf/treefrog_sample.configuration
 
-treefrog -i ${dir_sim_data}/$hald/tree/snapvr_list.txt -I 2 -s 51 -o ${dir_sim_data}/$hald/tree/treefrog -C $dir_tfconf/treefrog_sample.configuration
+treefrog -i ${dir_sim_data}/$hald/tree/snapvr_list.txt -I 2 -s 21 -o ${dir_sim_data}/$hald/tree/treefrog -C $dir_tfconf/treefrog_sample.configuration
