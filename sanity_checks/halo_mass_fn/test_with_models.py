@@ -31,14 +31,15 @@ import vrpy_tools
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--simnm', type=str)
-parser.add_argument('--rund', type=str)
+parser.add_argument('--runds', type=str)
 parser.add_argument('--i', type=int)
 
 args = parser.parse_args()
 
 L = int(args.simnm.split('_')[0][1:])
 # i = args.i
-rund = args.rund
+runds = args.runds.split(' ')
+rund = runds[0]
 
 dir_simdata_base = "/scratch/cprem/sims/"
 
@@ -79,7 +80,9 @@ hist_vr200m = np.zeros(numbins)
 hist_vrvir = np.zeros(numbins)
 hist_vrfof = np.zeros(numbins)
 
-for rund in ('r4', 'r5', 'r6', 'r7'):
+# runds = ('r4', 'r5', 'r6', 'r7')
+
+for rund in runds:
     dir_simdata = os.path.join(dir_simdata_allruns, rund)
     dir_simdata_vr = os.path.join(dir_simdata, 'halos_vr_6d')
     dir_simdata_rs = os.path.join(dir_simdata, 'halos_rs')
@@ -106,14 +109,16 @@ for rund in ('r4', 'r5', 'r6', 'r7'):
     hal_vr.close()  
     del hal_rs, hal_vr
 
-hist_rsvir /= 4
-hist_rs200c /= 4
-hist_rs200m /= 4
+num_runs = len(runds)
 
-hist_vr200c /= 4
-hist_vr200m /= 4
-hist_vrvir /= 4
-hist_vrfof /= 4
+hist_rsvir /= num_runs
+hist_rs200c /= num_runs
+hist_rs200m /= num_runs
+
+hist_vr200c /= num_runs
+hist_vr200m /= num_runs
+hist_vrvir /= num_runs
+hist_vrfof /= num_runs
 
 
 def smooth(y, box_pts):
@@ -133,19 +138,25 @@ hist_vrfof = smooth(hist_vrfof, 3)
 
 
 
-fig, (ax1,ax2) = plt.subplots(2, figsize=(14,9), dpi=250, sharex=True)
+colors = ['blue', 'green', 'brown', 'orange']
+mpl.rcParams['lines.linewidth'] = 1
+
+fig, (ax1,ax2) = plt.subplots(2, figsize=(10,7), dpi=200, sharex=True)
 plt.subplots_adjust(hspace=.1)
 
-color=next(ax1._get_lines.prop_cycler)['color']
+# color=next(ax1._get_lines.prop_cycler)['color']
 
-ax1.plot(bins_cen, hist_rsvir, label="RS_Mvir")
-ax1.plot(bins_cen, hist_rs200c, label="RS M200c")
-ax1.plot(bins_cen, hist_rs200m, label="RS M200m")
-ax1.plot(bins_cen, hist_vrfof, label="VR MFOF")
-ax1.plot(bins_cen, hist_vrvir, label="VR Mvir")
-ax1.plot(bins_cen, hist_vr200c, label="VR M200c")
-ax1.plot(bins_cen, hist_vr200m, label="VR M200m")
+mpl.rcParams['lines.linestyle'] = 'dotted'
+pltrsmvir, = ax1.plot(bins_cen, hist_rsvir, color=colors[0])
+pltrsm200c, = ax1.plot(bins_cen, hist_rs200c, color=colors[1])
+pltrsm200m, = ax1.plot(bins_cen, hist_rs200m, color=colors[2])
 
+mpl.rcParams['lines.linestyle'] = '--'
+
+pltvrmvir, = ax1.plot(bins_cen, hist_vrvir, color=colors[0])
+pltvrm200c, = ax1.plot(bins_cen, hist_vr200c, color=colors[1])
+pltvrm200m, = ax1.plot(bins_cen, hist_vr200m, color=colors[2])
+pltvrmfof, = ax1.plot(bins_cen, hist_vrfof, color=colors[3])
  
 # rsvir = ax1.hist(np.log10(hal_rs['Mvir']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, histtype='step', log=True,label="RS_Mvir")
 # rs200c = ax1.hist(np.log10(hal_rs['M200c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, histtype='step', log=True,label="RS_M200c")
@@ -156,29 +167,60 @@ ax1.plot(bins_cen, hist_vr200m, label="VR M200m")
 
 # tinkerplot = ax1.plot(np.log10(hal_mass_fn.m), hal_mass_fn.dndlog10m, label="Tinker-08", color='black')
 
+mpl.rcParams['lines.linestyle'] = 'solid'
 # ax1.plot(bins_cen, tinker_m200c(bins_cen), label="Tinker-08", color='black')
-ax1.plot(bins_cen, tnk_inp_fn['mvir'](bins_cen), label="Tinker Mvir")
-ax1.plot(bins_cen, tnk_inp_fn['m200c'](bins_cen), label="Tinker M200c")
-ax1.plot(bins_cen, tnk_inp_fn['m200m'](bins_cen), label="Tinker  M200m")
+ax1.plot(bins_cen, tnk_inp_fn['mvir'](bins_cen), ls='-', color=colors[0])
+plttkm200c, = ax1.plot(bins_cen, tnk_inp_fn['m200c'](bins_cen), ls='-', color=colors[1])
+ax1.plot(bins_cen, tnk_inp_fn['m200m'](bins_cen), ls='-', color=colors[2])
 
-ax2.set_xlabel('log(M) where mass is in $h^{-1}~M_{\odot}$')
+ax2.set_xlabel(r'log(M) where mass is in $h^{-1}~M_{\odot}$')
 ax1.set_ylabel(r'$\frac{dn}{d (\log ~M)}$ in $h^{3}Mpc^{-3}$')
-ax1.set_title(f'Halo mass function at redshift z = {z:.1g}')
-ax1.set_xlim(8, 15)
-# ax1.set_ylim(1e-6,6e-2)
+ax1.set_title(f'Halo mass function at redshift z = {z:.2g}')
+ax1.set_xlim(10, 15)
+ax1.set_ylim(1e-6,1e-1)
 ax1.set_yscale('log')
-ax1.legend()
+
+lines = ax1.get_lines()
+legend1 = ax1.legend([pltrsm200c, pltvrm200c, plttkm200c], ["Rockstar", "Velociraptor", "Tinker 2008"], loc=1)
+legend2 = ax1.legend([pltvrmfof, pltvrmvir, pltvrm200c, pltvrm200m], [r'$M_{\rm{FOF}}$', r'$M_{\rm{vir}}$', r'$M_{\rm{200c}}$', r'$M_{\rm{200m}}$'], loc=3)
+ax1.add_artist(legend1)
+ax1.add_artist(legend2)
+
+# ax1.legend()
 ax1.grid()
 
-ax2.plot(bins_cen, tnk_inp_fn['mvir'](bins_cen)/hist_vrfof, label="Tinker/ VR MFOF")
-ax2.plot(bins_cen, tnk_inp_fn['m200m'](bins_cen)/hist_vrvir, label="Tinker/ VR Mvir")
-ax2.plot(bins_cen, tnk_inp_fn['m200c'](bins_cen)/hist_vr200c, label="Tinker/ VR M200c")
-ax2.plot(bins_cen, tnk_inp_fn['m200m'](bins_cen)/hist_vr200m, label="Tinker/ VR M200m")
-ax2.plot(bins_cen, tnk_inp_fn['m200c'](bins_cen)/hist_rs200c, label="Tinker/ RS M200c")
-ax2.set_ylim(0.5,1.4)
-# ax2.set_yscale('log')
-ax2.legend()
-ax2.grid()
+mpl.rcParams['lines.linestyle'] = 'dotted'
+ax2.plot(bins_cen, hist_rsvir/tnk_inp_fn['mvir'](bins_cen), color=colors[0])
+ax2.plot(bins_cen, hist_rs200c/tnk_inp_fn['m200c'](bins_cen), color=colors[1])
+ax2.plot(bins_cen, hist_rs200m/tnk_inp_fn['m200m'](bins_cen), color=colors[2])
+ax2.plot([],[], color=colors[0], label='Rockstar/Tinker')
 
- 
-fig.savefig("plots/hmf.png")
+mpl.rcParams['lines.linestyle'] = '--'
+ax2.plot(bins_cen, hist_vrvir/tnk_inp_fn['mvir'](bins_cen), color=colors[0])
+ax2.plot(bins_cen, hist_vr200c/tnk_inp_fn['m200c'](bins_cen), color=colors[1])
+ax2.plot(bins_cen, hist_vr200m/tnk_inp_fn['m200m'](bins_cen), color=colors[2])
+ax2.plot(bins_cen, hist_vrfof/tnk_inp_fn['mvir'](bins_cen), color=colors[3])
+ax2.plot([],[], color=colors[0], label='Velociraptor/Tinker')
+
+ax2.set_ylim(0.55,1.6)
+# ax2.set_yscale('log')
+
+mpl.rcParams['lines.linestyle'] = 'solid'
+
+ax2.legend()
+
+major_ticks = np.arange(0.6, 1.41, 0.2)
+minor_ticks = np.arange(0.5, 1.51, 0.1)
+
+ax2.set_yticks(major_ticks)
+ax2.set_yticks(minor_ticks, minor=True)
+
+ax2.grid(b=True, which='major')
+ax2.grid(b=True, which='minor', ls='dashdot')
+
+# plt.show()
+
+fig.tight_layout()
+os.makedirs(f"plots/{args.simnm}", exist_ok=True)
+fig.savefig(f"plots/{args.simnm}/hmf_{''.join(runds)}_{args.i:03d}.png", dpi=250)
+fig.savefig(f"plots/{args.simnm}/hmf_{''.join(runds)}_{args.i:03d}.pdf")
