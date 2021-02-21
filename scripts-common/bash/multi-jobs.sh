@@ -8,7 +8,7 @@ z_in=${5:-24}
 dir_root=$HOME/cosmo-sims/
 cd $dir_root
 
-create-siminfo.sh $1 $2 $3 $4 $5
+create-siminfo.sh $boxsize $Npart $cosmology $rund $z_in
 
 gadget4/compile.sh
 
@@ -18,7 +18,7 @@ runds=(r4 r5 r6 r7)
 for i in {0..3};
 do
 export rund=${runds[i]} seed=${seeds[i]};
-create-siminfo.sh $1 $2 $3 $rund $5
+create-siminfo.sh $boxsize $Npart $cosmology $rund $z_in
 
 jidmono=$(qsub monofonic/comp_ics.pbs -v "simnm=$simnm,rund=$rund,seed=$seed")
 
