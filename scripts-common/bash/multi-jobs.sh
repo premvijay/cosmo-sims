@@ -1,14 +1,17 @@
 #!/bin/bash
+conda deacivate
 boxsize=${1:-200}
 Npart=${2:-512}
 cosmology=${3:-p18}
-export simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${4:-r1} seed=${6-8899}
+export simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${4:-r1} seed=${8-8899}
+export softlen1=${6:-0.0065} timestep=${7:-0.01}
+
 z_in=${5:-24}
 
 dir_root=$HOME/cosmo-sims/
 cd $dir_root
 
-create-siminfo.sh $boxsize $Npart $cosmology $rund $z_in 0.01 0.02
+create-siminfo.sh $boxsize $Npart $cosmology $rund $z_in $softlen1 $timestep
 
 gadget4/compile.sh
 

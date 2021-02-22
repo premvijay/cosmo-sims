@@ -1,30 +1,7 @@
-#!/bin/bash
-softlen1=0.0065
-timestep=0.01
-# z_in=24
-# Om0=0.3063375
-# OmL=0.6936625
-# Omb=0.0484103
-# h_par=0.6781
-# boxsize=200.0
-echo $2
-eval "$2"
+%  Relevant files
 
-dir_root=$HOME/cosmo-sims/gadget4/
-dir_sim=$dir_root/$simnm/
-dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
-dir_snap=$dir_sim_data/snaps/
-dir_ics=$dir_sim_data/ics/
-
-mkdir -p $dir_snap
-
-# a_in=$(printf %.5f `echo "1/($z_in+1)" | bc -l`)
-a_in=$(python -c "print (1.0/(1+$z_in))")
-
-printf '%s\n' "%  Relevant files
-
-InitCondFile	 $dir_ics/monofonic_${z_in}
-OutputDir	 $dir_snap
+InitCondFile	 /scratch/cprem/sims/L150_N256_Cp18/r1//ics//monofonic_24
+OutputDir	 /scratch/cprem/sims/L150_N256_Cp18/r1//snaps/
 
 #EnergyFile         energy.txt
 #InfoFile           info.txt
@@ -57,14 +34,14 @@ OutputListOn 		  0
 
 %  Caracteristics of run
 
-TimeBegin		 $a_in
+TimeBegin		 0.04
 TimeMax		 1.0
 
-Omega0		 $Om0
-OmegaLambda	 $OmL
-OmegaBaryon	 $Omb
-HubbleParam	 $h_par
-BoxSize		 $boxsize
+Omega0		 0.3063375
+OmegaLambda	 0.6936625
+OmegaBaryon	 0.0484103
+HubbleParam	 0.6781
+BoxSize		 150
 Hubble 100.0
 
 % Output frequency
@@ -90,7 +67,7 @@ ErrTolIntAccuracy      0.05
 
 CourantFac             0.15     
 
-MaxSizeTimestep       $timestep
+MaxSizeTimestep       0.03
 MinSizeTimestep       0.0
 
 
@@ -139,8 +116,8 @@ GravityConstantInternal  0
 SofteningComovingClass0      0.5           ; 
 SofteningMaxPhysClass0       0.5
 
-SofteningComovingClass1      $softlen1           ;
-SofteningMaxPhysClass1       $softlen1 
+SofteningComovingClass1      0.02           ;
+SofteningMaxPhysClass1       0.02 
 
 SofteningComovingClass2      0.005         ;
 SofteningMaxPhysClass2       0.005
@@ -155,5 +132,4 @@ SofteningClassOfPartType4    2
 SofteningClassOfPartType5    2
 % Softening lengths
 
-#MinGasHsmlFractional 0.25" > $1
-
+#MinGasHsmlFractional 0.25
