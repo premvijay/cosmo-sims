@@ -10,6 +10,8 @@ cosmology=${3:-p18}
 
 export simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${4:-r1}
 
+export softlen1=${6:-0.0065} timestep=${7:-0.01}
+
 z_in=${5:-24}
 
 echo Default: $boxsize, $Npart, $cosmology, $rund, $z_in, $simn
@@ -42,7 +44,7 @@ case $cosmology in
 esac
 
 echo "$Om0, $OmL, $Omb, $h_par, $ns, $sig8" > $dir_camb/${cosmology}.info
-echo "Om0=$Om0;OmL=$OmL;Omb=$Omb;h_par=$h_par;boxsize=$boxsize;Npart=$Npart;z_in=$z_in;cosmo=$cosmology;" > $dir_gad/$simnm/param_$rund.info
+echo "Om0=$Om0;OmL=$OmL;Omb=$Omb;h_par=$h_par;boxsize=$boxsize;Npart=$Npart;z_in=$z_in;cosmo=$cosmology;softlen1=$softlen1;timestep=$timestep" > $dir_gad/$simnm/param_$rund.info
 echo "Om0=$Om0;OmL=$OmL;Omb=$Omb;h_par=$h_par;ns=$ns;sig8=$sig8;boxsize=$boxsize;Npart=$Npart;z_in=$z_in;cosmo=$cosmology;" > $dir_mono/$simnm/param_$rund.info
 
 echo "simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${4:-r1}"

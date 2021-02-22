@@ -1,5 +1,6 @@
 #!/bin/bash
 softlen1=0.0065
+timestep=0.01
 # z_in=24
 # Om0=0.3063375
 # OmL=0.6936625
@@ -87,7 +88,7 @@ ErrTolIntAccuracy      0.05
 
 CourantFac             0.15     
 
-MaxSizeTimestep       0.01
+MaxSizeTimestep       $timestep
 MinSizeTimestep       0.0
 
 

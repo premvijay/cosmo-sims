@@ -8,17 +8,17 @@ z_in=${5:-24}
 dir_root=$HOME/cosmo-sims/
 cd $dir_root
 
-create-siminfo.sh $boxsize $Npart $cosmology $rund $z_in
+create-siminfo.sh $boxsize $Npart $cosmology $rund $z_in 0.01 0.02
 
 gadget4/compile.sh
 
-seeds=(4444 5555 6666 7777)
-runds=(r4 r5 r6 r7)
+# seeds=(4444 5555 6666 7777)
+# runds=(r4 r5 r6 r7)
 
-for i in {0..3};
-do
-export rund=${runds[i]} seed=${seeds[i]};
-create-siminfo.sh $boxsize $Npart $cosmology $rund $z_in
+# for i in {0..3};
+# do
+# export rund=${runds[i]} seed=${seeds[i]};
+# create-siminfo.sh $boxsize $Npart $cosmology $rund $z_in
 
 jidmono=$(qsub monofonic/comp_ics.pbs -v "simnm=$simnm,rund=$rund,seed=$seed")
 
@@ -29,4 +29,4 @@ jidrs=$(qsub rockstar/runrstar.pbs -v "simnm=$simnm,rund=$rund"  -W depend=after
 
 jidtf=$(qsub treefrog/runtree.pbs -v "simnm=$simnm,rund=$rund,space=6d"  -W depend=afterok:${jidvr%.*});
 
-done;
+# done;
