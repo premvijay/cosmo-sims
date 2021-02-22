@@ -54,13 +54,16 @@ siminfo = vrpy_tools.ReadSimInfo(os.path.join(dir_simdata_vr, f'out_{args.i:03d}
 z = 1/siminfo['ScaleFactor'] - 1
 
 tnk_inp_fn = {}
-for model, massdef in zip(["SOVirial", 'SOMean', 'SOCritical'], ['mvir', 'm200m', 'm200c']):
+for model, massdef, overdensity in zip(["SOVirial", 'SOMean', 'SOCritical', 'SOCritical'], ['mvir', 'm200m', 'm200c', 'm500c'], [None, 200, 200, 500]):
     hal_mass_fn = MassFunction()
     hal_mass_fn.update(cosmo_model=Planck18)
     hal_mass_fn.update(z=z)
     hal_mass_fn.update(hmf_model="Tinker08")
     hal_mass_fn.update(Mmin  = 8, Mmax = 15)
-    hal_mass_fn.update(mdef_model  = model,)
+    if overdensity is None:
+        hal_mass_fn.update(mdef_model  = model)
+    else:
+        hal_mass_fn.update(mdef_model  = model, mdef_params = {"overdensity": overdensity})
     tnk_inp_fn[massdef] = interp1d(np.log10(hal_mass_fn.m), hal_mass_fn.dndlog10m)
 
 # hal_mass_fn.update(mdef_model  = model, mdef_params = {"overdensity":200,})
@@ -72,12 +75,14 @@ bins_cen = (bins_edges[:-1] + bins_edges[1:]) / 2
 numbins = bins_cen.shape[0]
 
 hist_rsvir = np.zeros(numbins)
-hist_rs200c = np.zeros(numbins)
 hist_rs200m = np.zeros(numbins)
+hist_rs200c = np.zeros(numbins)
+hist_rs500c = np.zeros(numbins)
 
-hist_vr200c = np.zeros(numbins)
-hist_vr200m = np.zeros(numbins)
 hist_vrvir = np.zeros(numbins)
+hist_vr200m = np.zeros(numbins)
+hist_vr200c = np.zeros(numbins)
+hist_vr500c = np.zeros(numbins)
 hist_vrfof = np.zeros(numbins)
 
 # runds = ('r4', 'r5', 'r6', 'r7')
@@ -97,12 +102,13 @@ for rund in runds:
     num_hal_rs = hal_rs['#ID'].shape[0]
 
     hist_rsvir += np.histogram(np.log10(hal_rs['Mvir']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
-    hist_rs200c += np.histogram(np.log10(hal_rs['M200c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
     hist_rs200m += np.histogram(np.log10(hal_rs['M200b']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
+    hist_rs500c += np.histogram(np.log10(hal_rs['M500c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
 
-    hist_vr200c += np.histogram(np.log10(hal_vr.root.Mass_200crit[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vr200m += np.histogram(np.log10(hal_vr.root.Mass_200mean[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
     hist_vrvir += np.histogram(np.log10(hal_vr.root.Mvir[select_hal]) + 10, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vr200m += np.histogram(np.log10(hal_vr.root.Mass_200mean[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vr200c += np.histogram(np.log10(hal_vr.root.Mass_200crit[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vr500c += np.histogram(np.log10(hal_vr.root.SO_Mass_500_rhocrit[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
     hist_vrfof += np.histogram(np.log10(hal_vr.root.Mass_FOF[select_hal]) + 10, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
 
 
@@ -112,12 +118,14 @@ for rund in runds:
 num_runs = len(runds)
 
 hist_rsvir /= num_runs
-hist_rs200c /= num_runs
 hist_rs200m /= num_runs
+hist_rs200c /= num_runs
+hist_rs500c /= num_runs
 
-hist_vr200c /= num_runs
-hist_vr200m /= num_runs
 hist_vrvir /= num_runs
+hist_vr200m /= num_runs
+hist_vr200c /= num_runs
+hist_vr500c /= num_runs
 hist_vrfof /= num_runs
 
 
@@ -126,19 +134,21 @@ def smooth(y, box_pts):
     y_smooth = np.convolve(y, box, mode='same')
     return y_smooth
 
-hist_rsvir = smooth(hist_rsvir, 3)
-hist_rs200c = smooth(hist_rs200c, 3)
-hist_rs200m = smooth(hist_rs200m, 3)
+hist_rsvir = smooth(hist_rsvir, 4)
+hist_rs200m = smooth(hist_rs200m, 4)
+hist_rs200c = smooth(hist_rs200c, 4)
+hist_rs500c = smooth(hist_rs500c, 4)
 
-hist_vr200c = smooth(hist_vr200c, 3)
-hist_vr200m = smooth(hist_vr200m, 3)
-hist_vrvir = smooth(hist_vrvir, 3)
-hist_vrfof = smooth(hist_vrfof, 3)
+hist_vrvir = smooth(hist_vrvir, 4)
+hist_vr200m = smooth(hist_vr200m, 4)
+hist_vr200c = smooth(hist_vr200c, 4)
+hist_vr500c = smooth(hist_vr500c, 4)
+hist_vrfof = smooth(hist_vrfof, 4)
 
 
 
 
-colors = ['blue', 'green', 'brown', 'orange']
+colors = ['blue', 'green', 'brown', 'purple', 'orange' ]
 mpl.rcParams['lines.linewidth'] = 1
 
 fig, (ax1,ax2) = plt.subplots(2, figsize=(10,7), dpi=200, sharex=True)
@@ -148,15 +158,17 @@ plt.subplots_adjust(hspace=.1)
 
 mpl.rcParams['lines.linestyle'] = 'dotted'
 pltrsmvir, = ax1.plot(bins_cen, hist_rsvir, color=colors[0])
-pltrsm200c, = ax1.plot(bins_cen, hist_rs200c, color=colors[1])
-pltrsm200m, = ax1.plot(bins_cen, hist_rs200m, color=colors[2])
+pltrsm200m, = ax1.plot(bins_cen, hist_rs200m, color=colors[1])
+pltrsm200c, = ax1.plot(bins_cen, hist_rs200c, color=colors[2])
+pltrsm500c, = ax1.plot(bins_cen, hist_rs500c, color=colors[3])
 
 mpl.rcParams['lines.linestyle'] = '--'
 
 pltvrmvir, = ax1.plot(bins_cen, hist_vrvir, color=colors[0])
-pltvrm200c, = ax1.plot(bins_cen, hist_vr200c, color=colors[1])
-pltvrm200m, = ax1.plot(bins_cen, hist_vr200m, color=colors[2])
-pltvrmfof, = ax1.plot(bins_cen, hist_vrfof, color=colors[3])
+pltvrm200m, = ax1.plot(bins_cen, hist_vr200m, color=colors[1])
+pltvrm200c, = ax1.plot(bins_cen, hist_vr200c, color=colors[2])
+pltvrm500c, = ax1.plot(bins_cen, hist_vr500c, color=colors[3])
+pltvrmfof, = ax1.plot(bins_cen, hist_vrfof, color=colors[4])
  
 # rsvir = ax1.hist(np.log10(hal_rs['Mvir']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, histtype='step', log=True,label="RS_Mvir")
 # rs200c = ax1.hist(np.log10(hal_rs['M200c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, histtype='step', log=True,label="RS_M200c")
@@ -170,8 +182,9 @@ pltvrmfof, = ax1.plot(bins_cen, hist_vrfof, color=colors[3])
 mpl.rcParams['lines.linestyle'] = 'solid'
 # ax1.plot(bins_cen, tinker_m200c(bins_cen), label="Tinker-08", color='black')
 ax1.plot(bins_cen, tnk_inp_fn['mvir'](bins_cen), ls='-', color=colors[0])
-plttkm200c, = ax1.plot(bins_cen, tnk_inp_fn['m200c'](bins_cen), ls='-', color=colors[1])
-ax1.plot(bins_cen, tnk_inp_fn['m200m'](bins_cen), ls='-', color=colors[2])
+ax1.plot(bins_cen, tnk_inp_fn['m200m'](bins_cen), ls='-', color=colors[1])
+plttkm200c, = ax1.plot(bins_cen, tnk_inp_fn['m200c'](bins_cen), ls='-', color=colors[2])
+ax1.plot(bins_cen, tnk_inp_fn['m500c'](bins_cen), ls='-', color=colors[3])
 
 ax2.set_xlabel(r'log(M) where mass is in $h^{-1}~M_{\odot}$')
 ax1.set_ylabel(r'$\frac{dn}{d (\log ~M)}$ in $h^{3}Mpc^{-3}$')
@@ -182,7 +195,7 @@ ax1.set_yscale('log')
 
 lines = ax1.get_lines()
 legend1 = ax1.legend([pltrsm200c, pltvrm200c, plttkm200c], ["Rockstar", "Velociraptor", "Tinker 2008"], loc=1)
-legend2 = ax1.legend([pltvrmfof, pltvrmvir, pltvrm200c, pltvrm200m], [r'$M_{\rm{FOF}}$', r'$M_{\rm{vir}}$', r'$M_{\rm{200c}}$', r'$M_{\rm{200m}}$'], loc=3)
+legend2 = ax1.legend([pltvrmvir, pltvrm200m, pltvrm200c, pltvrm500c, pltvrmfof], [r'$M_{\rm{vir}}$', r'$M_{\rm{200m}}$', r'$M_{\rm{200c}}$', r'$M_{\rm{500c}}$', r'$M_{\rm{FOF}}$'], loc=3)
 ax1.add_artist(legend1)
 ax1.add_artist(legend2)
 
@@ -191,15 +204,17 @@ ax1.grid()
 
 mpl.rcParams['lines.linestyle'] = 'dotted'
 ax2.plot(bins_cen, hist_rsvir/tnk_inp_fn['mvir'](bins_cen), color=colors[0])
-ax2.plot(bins_cen, hist_rs200c/tnk_inp_fn['m200c'](bins_cen), color=colors[1])
-ax2.plot(bins_cen, hist_rs200m/tnk_inp_fn['m200m'](bins_cen), color=colors[2])
+ax2.plot(bins_cen, hist_rs200m/tnk_inp_fn['m200m'](bins_cen), color=colors[1])
+ax2.plot(bins_cen, hist_rs200c/tnk_inp_fn['m200c'](bins_cen), color=colors[2])
+ax2.plot(bins_cen, hist_rs500c/tnk_inp_fn['m500c'](bins_cen), color=colors[3])
 ax2.plot([],[], color=colors[0], label='Rockstar/Tinker')
 
 mpl.rcParams['lines.linestyle'] = '--'
 ax2.plot(bins_cen, hist_vrvir/tnk_inp_fn['mvir'](bins_cen), color=colors[0])
-ax2.plot(bins_cen, hist_vr200c/tnk_inp_fn['m200c'](bins_cen), color=colors[1])
-ax2.plot(bins_cen, hist_vr200m/tnk_inp_fn['m200m'](bins_cen), color=colors[2])
-ax2.plot(bins_cen, hist_vrfof/tnk_inp_fn['mvir'](bins_cen), color=colors[3])
+ax2.plot(bins_cen, hist_vr200m/tnk_inp_fn['m200m'](bins_cen), color=colors[1])
+ax2.plot(bins_cen, hist_vr200c/tnk_inp_fn['m200c'](bins_cen), color=colors[2])
+ax2.plot(bins_cen, hist_vr500c/tnk_inp_fn['m500c'](bins_cen), color=colors[3])
+ax2.plot(bins_cen, hist_vrfof/tnk_inp_fn['mvir'](bins_cen), color=colors[4])
 ax2.plot([],[], color=colors[0], label='Velociraptor/Tinker')
 
 ax2.set_ylim(0.55,1.6)
@@ -222,5 +237,5 @@ ax2.grid(b=True, which='minor', ls='dashdot')
 
 fig.tight_layout()
 os.makedirs(f"plots/{args.simnm}", exist_ok=True)
-fig.savefig(f"plots/{args.simnm}/hmf_{''.join(runds)}_{args.i:03d}.png", dpi=250)
+fig.savefig(f"plots/{args.simnm}/hmf_{''.join(runds)}_{args.i:03d}.png", dpi=200)
 fig.savefig(f"plots/{args.simnm}/hmf_{''.join(runds)}_{args.i:03d}.pdf")
