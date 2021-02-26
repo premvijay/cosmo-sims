@@ -6,6 +6,10 @@ job-*.e6*
 job-*.o6*
 job-*.p6*
 job-*.r6*
+job-*.e7*
+job-*.o7*
+job-*.p7*
+job-*.r7*
 monofonic/*/input_powerspec.txt
 monofonic/*/input_transfer.txt
 # param_r1.txt
