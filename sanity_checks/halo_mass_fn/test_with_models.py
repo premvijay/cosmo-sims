@@ -101,15 +101,19 @@ for rund in runds:
     num_hal_vr = select_hal[0].shape[0]
     num_hal_rs = hal_rs['#ID'].shape[0]
 
+    print(f"Number of host halos found by ROCKSTAR is {num_hal_rs}.")
+    print(f"Number of host halos found by VELOCIraptor is {num_hal_vr}.")
+
     hist_rsvir += np.histogram(np.log10(hal_rs['Mvir']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
     hist_rs200m += np.histogram(np.log10(hal_rs['M200b']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
+    hist_rs200c += np.histogram(np.log10(hal_rs['M200c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
     hist_rs500c += np.histogram(np.log10(hal_rs['M500c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
 
     hist_vrvir += np.histogram(np.log10(hal_vr.root.Mvir[select_hal]) + 10, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
     hist_vr200m += np.histogram(np.log10(hal_vr.root.Mass_200mean[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
     hist_vr200c += np.histogram(np.log10(hal_vr.root.Mass_200crit[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
     hist_vr500c += np.histogram(np.log10(hal_vr.root.SO_Mass_500_rhocrit[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vrfof += np.histogram(np.log10(hal_vr.root.Mass_FOF[select_hal]) + 10, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vrfof += np.histogram(np.log10(hal_vr.root.Mass_BN98_excl[select_hal]) + 10, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
 
 
     hal_vr.close()  
@@ -195,7 +199,7 @@ ax1.set_yscale('log')
 
 lines = ax1.get_lines()
 legend1 = ax1.legend([pltrsm200c, pltvrm200c, plttkm200c], ["Rockstar", "Velociraptor", "Tinker 2008"], loc=1)
-legend2 = ax1.legend([pltvrmvir, pltvrm200m, pltvrm200c, pltvrm500c, pltvrmfof], [r'$M_{\rm{vir}}$', r'$M_{\rm{200m}}$', r'$M_{\rm{200c}}$', r'$M_{\rm{500c}}$', r'$M_{\rm{FOF}}$'], loc=3)
+legend2 = ax1.legend([pltvrmvir, pltvrm200m, pltvrm200c, pltvrm500c, pltvrmfof], [r'$M_{\rm{vir}}$', r'$M_{\rm{200m}}$', r'$M_{\rm{200c}}$', r'$M_{\rm{500c}}$', r'$M_{\rm{BN98}}$'], loc=3)
 ax1.add_artist(legend1)
 ax1.add_artist(legend2)
 
@@ -209,7 +213,7 @@ ax2.plot(bins_cen, hist_rs200c/tnk_inp_fn['m200c'](bins_cen), color=colors[2])
 ax2.plot(bins_cen, hist_rs500c/tnk_inp_fn['m500c'](bins_cen), color=colors[3])
 ax2.plot([],[], color=colors[0], label='Rockstar/Tinker')
 
-mpl.rcParams['lines.linestyle'] = '--'
+mpl.rcParams['lines.linestyle'] = (0,(5,1,3,1))
 ax2.plot(bins_cen, hist_vrvir/tnk_inp_fn['mvir'](bins_cen), color=colors[0])
 ax2.plot(bins_cen, hist_vr200m/tnk_inp_fn['m200m'](bins_cen), color=colors[1])
 ax2.plot(bins_cen, hist_vr200c/tnk_inp_fn['m200c'](bins_cen), color=colors[2])
