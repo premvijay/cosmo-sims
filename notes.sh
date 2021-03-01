@@ -9,3 +9,9 @@ cd rockstar/
 simnm=L40_N512_Cp18 rund=r1 ./gen-param.sh $simnm/param_r1.txt
 rockstar -c L40_N512_Cp18/param_r1.txt
 simnm=L40_N512_Cp18 rund=r1 L=40 ./get_parent_info.sh
+
+
+
+An important finding is that Inclusive Halo mass calculation. It mainly affect 200m, 200c, 500c but not Mvir
+On the other hand Mvir affected by ncellfac
+# reference frame origin either centre of mass or particle with minimum potential.
