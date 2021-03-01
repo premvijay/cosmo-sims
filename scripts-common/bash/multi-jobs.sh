@@ -1,10 +1,11 @@
 #!/bin/bash
-conda deacivate
+conda deactivate
 boxsize=${1:-200}
 Npart=${2:-512}
 cosmology=${3:-p18}
 export simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${4:-r1} seed=${8-8899}
 export softlen1=${6:-0.0065} timestep=${7:-0.01}
+compgad=${compgad:-1}
 
 z_in=${5:-24}
 
@@ -13,7 +14,7 @@ cd $dir_root
 
 create-siminfo.sh $boxsize $Npart $cosmology $rund $z_in $softlen1 $timestep
 
-gadget4/compile.sh
+if ((compgad)); then gadget4/compile.sh; fi
 
 # seeds=(4444 5555 6666 7777)
 # runds=(r4 r5 r6 r7)
