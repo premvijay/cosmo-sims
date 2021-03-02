@@ -7,14 +7,16 @@ echo "Also provide rundir name and initial redshift."
 boxsize=${1:-200}
 Npart=${2:-512}
 cosmology=${3:-p18}
+bary=${bary:-no}
 
-export simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${4:-r1}
+export simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${rund:-r1}
+if [ "$bary" = yes ]; then export simnm=${simnm}_bar; fi
 
-export softlen1=${6:-0.0065} timestep=${7:-0.01}
+export softlen1=${softlen1:-0.0065} tstep=${tstep:-0.01}
 
-z_in=${5:-24}
+z_in=${z_in:-24}
 
-echo Default: $boxsize, $Npart, $cosmology, $rund, $z_in, $simn
+echo Using values: $boxsize, $Npart, $cosmology, $rund, $z_in, $simn
 
 # cat pigoome;
 
@@ -43,10 +45,12 @@ case $cosmology in
     ;;
 esac
 
-echo "$Om0, $OmL, $Omb, $h_par, $ns, $sig8" > $dir_camb/${cosmology}.info
-echo "Om0=$Om0;OmL=$OmL;Omb=$Omb;h_par=$h_par;boxsize=$boxsize;Npart=$Npart;z_in=$z_in;cosmo=$cosmology;softlen1=$softlen1;timestep=$timestep" > $dir_gad/$simnm/param_$rund.info
-echo "Om0=$Om0;OmL=$OmL;Omb=$Omb;h_par=$h_par;ns=$ns;sig8=$sig8;boxsize=$boxsize;Npart=$Npart;z_in=$z_in;cosmo=$cosmology;" > $dir_mono/$simnm/param_$rund.info
+echo "$Om0, $OmL, $Omb, $h_par, $ns, $sig8" > $dir_camb/${cosmology}.info   # To compile gadget
+#To generate parameter file for monofonIC
+echo "Om0=$Om0;OmL=$OmL;Omb=$Omb;h_par=$h_par;boxsize=$boxsize;Npart=$Npart;z_in=$z_in;cosmo=$cosmology;softlen1=$softlen1;timestep=$tstep;bary=$bary" > $dir_gad/$simnm/param_$rund.info
+#To generate parameter file for GADGET-4
+echo "Om0=$Om0;OmL=$OmL;Omb=$Omb;h_par=$h_par;ns=$ns;sig8=$sig8;boxsize=$boxsize;Npart=$Npart;z_in=$z_in;cosmo=$cosmology;bary=$bary" > $dir_mono/$simnm/param_$rund.info
 
-echo "simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${4:-r1}"
+# echo "simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${4:-r1}"
 
 # $dir_gad/compile.sh

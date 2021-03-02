@@ -3,16 +3,17 @@ conda deactivate
 boxsize=${1:-200}
 Npart=${2:-512}
 cosmology=${3:-p18}
-export simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${4:-r1} seed=${8-8899}
-export softlen1=${6:-0.0065} timestep=${7:-0.01}
+export simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${rund:-r1} seed=${seed-8899}
+export softlen1=${softlen1:-0.0065} timestep=${tstep:-0.01} z_in=${z_in:-24}
 compgad=${compgad:-1}
+bary=${bary:-no}
 
-z_in=${5:-24}
+if [ "$bary" = yes ]; then export simnm=${simnm}_bar; fi
 
 dir_root=$HOME/cosmo-sims/
 cd $dir_root
 
-create-siminfo.sh $boxsize $Npart $cosmology $rund $z_in $softlen1 $timestep
+create-siminfo.sh $boxsize $Npart $cosmology
 
 if ((compgad)); then gadget4/compile.sh; fi
 
