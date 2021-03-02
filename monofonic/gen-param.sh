@@ -37,7 +37,7 @@ zstart          = $z_in
 LPTorder        = 3
 
 # also do baryon ICs?
-DoBaryons       = no
+DoBaryons       = $bary
 
 # do mode fixing à la Angulo&Pontzen
 DoFixing        = yes
