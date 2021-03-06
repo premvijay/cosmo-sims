@@ -33,6 +33,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--simnm', type=str)
 parser.add_argument('--runds', type=str)
 parser.add_argument('--i', type=int)
+parser.add_argument('--suffix', type=str)
 
 args = parser.parse_args()
 
@@ -46,7 +47,11 @@ dir_simdata_base = "/scratch/cprem/sims/"
 dir_simdata_allruns = os.path.join(dir_simdata_base, args.simnm)
 
 dir_simdata = os.path.join(dir_simdata_allruns, rund)
-dir_simdata_vr = os.path.join(dir_simdata, 'halos_vr_6d')
+
+halos_vr_dirname = 'halos_vr_6d'
+if args.suffix is not None: halos_vr_dirname += '_'+ args.suffix
+
+dir_simdata_vr = os.path.join(dir_simdata, halos_vr_dirname)
 dir_simdata_rs = os.path.join(dir_simdata, 'halos_rs')
 
 siminfo = vrpy_tools.ReadSimInfo(os.path.join(dir_simdata_vr, f'out_{args.i:03d}'))
@@ -89,14 +94,18 @@ hist_vrfof = np.zeros(numbins)
 
 for rund in runds:
     dir_simdata = os.path.join(dir_simdata_allruns, rund)
-    dir_simdata_vr = os.path.join(dir_simdata, 'halos_vr_6d')
+    dir_simdata_vr = os.path.join(dir_simdata, halos_vr_dirname)
     dir_simdata_rs = os.path.join(dir_simdata, 'halos_rs')
 
     hal_rs = pd.read_csv(os.path.join(dir_simdata_rs, f'out_wp_{args.i:d}.list'), sep=r'\s+', header=0, skiprows=list(range(1,16)), engine='c')
     hal_rs = hal_rs[hal_rs['PID']==-1]
 
     hal_vr = tables.open_file(os.path.join(dir_simdata_vr, f'out_{args.i:03d}.properties.0'), 'r')
-    select_hal = np.where(hal_vr.root.hostHaloID[:]==-1)
+
+    kin_ratio = 2*hal_vr.root.Ekin[:] /np.abs(hal_vr.root.Epot[:]); print(kin_ratio<1.5)
+    # select_virial = np.where(np.logical_and( kin_ratio > 0.5, kin_ratio < 1.5  ))
+
+    select_hal = np.where(np.logical_and(hal_vr.root.hostHaloID[:]==-1, abs(kin_ratio-1) < 0.5  ))
 
     num_hal_vr = select_hal[0].shape[0]
     num_hal_rs = hal_rs['#ID'].shape[0]
@@ -113,7 +122,7 @@ for rund in runds:
     hist_vr200m += np.histogram(np.log10(hal_vr.root.Mass_200mean[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
     hist_vr200c += np.histogram(np.log10(hal_vr.root.Mass_200crit[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
     hist_vr500c += np.histogram(np.log10(hal_vr.root.SO_Mass_500_rhocrit[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vrfof += np.histogram(np.log10(hal_vr.root.Mass_BN98_excl[select_hal]) + 10, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vrfof += np.histogram(np.log10(hal_vr.root.Mass_BN98[select_hal]) + 10, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
 
 
     hal_vr.close()  
@@ -241,5 +250,6 @@ ax2.grid(b=True, which='minor', ls='dashdot')
 
 fig.tight_layout()
 os.makedirs(f"plots/{args.simnm}", exist_ok=True)
-fig.savefig(f"plots/{args.simnm}/hmf_{''.join(runds)}_{args.i:03d}.png", dpi=200)
-fig.savefig(f"plots/{args.simnm}/hmf_{''.join(runds)}_{args.i:03d}.pdf")
+# fig.savefig(f"plots/{args.simnm}/hmf_{''.join(runds)}_{args.i:03d}.png", dpi=200)
+plot_suffix = f'-{args.suffix:s}' if args.suffix is not None else ''
+fig.savefig(f"plots/{args.simnm}/hmf_{''.join(runds)}_{args.i:03d}{plot_suffix:s}.pdf")
