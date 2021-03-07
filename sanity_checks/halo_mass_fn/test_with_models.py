@@ -118,11 +118,11 @@ for rund in runds:
     hist_rs200c += np.histogram(np.log10(hal_rs['M200c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
     hist_rs500c += np.histogram(np.log10(hal_rs['M500c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
 
-    hist_vrvir += np.histogram(np.log10(hal_vr.root.Mvir[select_hal]) + 10, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vr200m += np.histogram(np.log10(hal_vr.root.Mass_200mean[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vr200c += np.histogram(np.log10(hal_vr.root.Mass_200crit[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vr500c += np.histogram(np.log10(hal_vr.root.SO_Mass_500_rhocrit[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vrfof += np.histogram(np.log10(hal_vr.root.Mass_BN98[select_hal]) + 10, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vrvir += np.histogram(np.log10(hal_vr.root.Mvir[select_hal]), bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vr200m += np.histogram(np.log10(hal_vr.root.Mass_200mean[select_hal]), bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vr200c += np.histogram(np.log10(hal_vr.root.Mass_200crit[select_hal]), bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vr500c += np.histogram(np.log10(hal_vr.root.SO_Mass_500_rhocrit[select_hal]), bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vrfof += np.histogram(np.log10(hal_vr.root.Mass_FOF[select_hal]), bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
 
 
     hal_vr.close()  
