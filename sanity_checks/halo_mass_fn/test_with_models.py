@@ -18,7 +18,7 @@ from hmf import MassFunction
 
 # from hmf.halos import mass_definitions as md
 
-from astropy.cosmology import Planck18
+from astropy.cosmology import FlatLambdaCDM, Planck18
 from scipy.interpolate import interp1d
 
 import vrpy_tools
@@ -57,17 +57,23 @@ dir_simdata_rs = os.path.join(dir_simdata, 'halos_rs')
 siminfo = vrpy_tools.ReadSimInfo(os.path.join(dir_simdata_vr, f'out_{args.i:03d}'))
 
 z = 1/siminfo['ScaleFactor'] - 1
+Om_m = siminfo['Omega_m']
+
+# p18py = Planck18.clone(name='Planck18 modified', H0=siminfo['h_val']*siminfo['Hubble_unit'], Om0=siminfo['Omega_m'], Ob0=siminfo['Omega_b'],)
+p18py = Planck18
+print(p18py)
 
 tnk_inp_fn = {}
 for model, massdef, overdensity in zip(["SOVirial", 'SOMean', 'SOCritical', 'SOCritical'], ['mvir', 'm200m', 'm200c', 'm500c'], [None, 200, 200, 500]):
     hal_mass_fn = MassFunction()
-    hal_mass_fn.update(cosmo_model=Planck18)
+    hal_mass_fn.update(cosmo_model=p18py)
     hal_mass_fn.update(z=z)
     hal_mass_fn.update(hmf_model="Tinker08")
     hal_mass_fn.update(Mmin  = 8, Mmax = 15)
     if overdensity is None:
         hal_mass_fn.update(mdef_model  = model)
     else:
+        # overdensity *= p18py.Om(z)
         hal_mass_fn.update(mdef_model  = model, mdef_params = {"overdensity": overdensity})
     tnk_inp_fn[massdef] = interp1d(np.log10(hal_mass_fn.m), hal_mass_fn.dndlog10m)
 
@@ -113,16 +119,17 @@ for rund in runds:
     print(f"Number of host halos found by ROCKSTAR is {num_hal_rs}.")
     print(f"Number of host halos found by VELOCIraptor is {num_hal_vr}.")
 
+    offset_Mfactor = 0.1687
     hist_rsvir += np.histogram(np.log10(hal_rs['Mvir']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
     hist_rs200m += np.histogram(np.log10(hal_rs['M200b']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
     hist_rs200c += np.histogram(np.log10(hal_rs['M200c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
     hist_rs500c += np.histogram(np.log10(hal_rs['M500c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
 
-    hist_vrvir += np.histogram(np.log10(hal_vr.root.Mvir[select_hal]), bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vr200m += np.histogram(np.log10(hal_vr.root.Mass_200mean[select_hal]), bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vr200c += np.histogram(np.log10(hal_vr.root.Mass_200crit[select_hal]), bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vr500c += np.histogram(np.log10(hal_vr.root.SO_Mass_500_rhocrit[select_hal]), bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vrfof += np.histogram(np.log10(hal_vr.root.Mass_FOF[select_hal]), bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vrvir += np.histogram(np.log10(hal_vr.root.Mvir[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vr200m += np.histogram(np.log10(hal_vr.root.Mass_200mean[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vr200c += np.histogram(np.log10(hal_vr.root.Mass_200crit[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vr500c += np.histogram(np.log10(hal_vr.root.SO_Mass_500_rhocrit[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vrfof += np.histogram(np.log10(hal_vr.root.Mass_BN98[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
 
 
     hal_vr.close()  
@@ -201,7 +208,7 @@ ax1.plot(bins_cen, tnk_inp_fn['m500c'](bins_cen), ls='-', color=colors[3])
 
 ax2.set_xlabel(r'log(M) where mass is in $h^{-1}~M_{\odot}$')
 ax1.set_ylabel(r'$\frac{dn}{d (\log ~M)}$ in $h^{3}Mpc^{-3}$')
-ax1.set_title(f'Halo mass function at redshift z = {z:.2g}')
+ax1.set_title(f'Halo mass function at redshift z = {z:.3g}')
 ax1.set_xlim(10, 15)
 ax1.set_ylim(1e-6,1e-1)
 ax1.set_yscale('log')
