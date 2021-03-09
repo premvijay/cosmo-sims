@@ -1,5 +1,5 @@
 #!/bin/bash
-conda deactivate
+# conda deactivate
 boxsize=${1:-200}
 Npart=${2:-512}
 cosmology=${3:-p18}
