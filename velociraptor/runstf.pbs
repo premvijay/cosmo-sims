@@ -9,7 +9,7 @@ cd $dir_vrconf;
 export simnm=${simnm:-L200_N256_Cp18} rund=${rund:-r1} space=${space:-6d}
 export dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
 # echo Hello > hello1.txt
-rm -f -r ${dir_sim_data}/halos_vr_$space
+# rm -f -r ${dir_sim_data}/halos_vr_$space
 mkdir -p ${dir_sim_data}/halos_vr_$space
 # hdf5_gadget4_to_2.sh "snapdir_*/snapshot_*"
 # whereis mpirun >> hello.txt
@@ -24,12 +24,12 @@ module add hdf5_p/1.10.7
 
 i=010
 echo "mpirun -np 64 -machinefile $PBS_NODEFILE ~/bin/stfp -i ${dir_sim_data}/snaps/snapdir_$i/snapshot_$i -I 2 -s 8 -Z 8 -o ${dir_sim_data}/halos_vr_${space}/out_$i -C $dir_vrconf/sample_dmcosmological_${space}fof_subhalo_custom.cfg 2> stf.log;"
-# mpirun -np 64 -machinefile $PBS_NODEFILE ~/bin/stfp -i ${dir_sim_data}/snaps/snapdir_$i/snapshot_$i -I 2 -s 8 -Z 8 -o ${dir_sim_data}/halos_vr_${space}/out_$i -C $dir_vrconf/sample_dmcosmological_${space}fof_subhalo_custom.cfg 2> stf.log;
+mpirun -np 64 -machinefile $PBS_NODEFILE ~/bin/stfp -i ${dir_sim_data}/snaps/snapdir_$i/snapshot_$i -I 2 -s 8 -Z 8 -o ${dir_sim_data}/halos_vr_${space}/out_$i -C $dir_vrconf/params-minimal.cfg 2> stf.log;
 
-for i in {000..020}
-do 
-    mpirun -np 64 -machinefile $PBS_NODEFILE ~/bin/stfp -i ${dir_sim_data}/snaps/snapdir_$i/snapshot_$i -I 2 -s 8 -Z 8 -o ${dir_sim_data}/halos_vr_${space}/out_$i -C $dir_vrconf/sample_dmcosmological_${space}fof_subhalo.cfg 2> stf.log;
-done
+# for i in {000..020}
+# do 
+#     mpirun -np 64 -machinefile $PBS_NODEFILE ~/bin/stfp -i ${dir_sim_data}/snaps/snapdir_$i/snapshot_$i -I 2 -s 8 -Z 8 -o ${dir_sim_data}/halos_vr_${space}/out_$i -C $dir_vrconf/sample_dmcosmological_${space}fof_subhalo.cfg 2> stf.log;
+# done
 
 # ~/bin/stf -i ${dir_sim_data}/snaps/snapdir_{1}/snapshot_{1} -I 2 -s 8 -o ${dir_sim_data}/halos_vr/out_{1} -C $dir_vrconf/sample_dmcosmological_6dfof_subhalo.cfg 2> stf.log
 # ~/bin/stf -i ${dir_sim_data}/snaps/snapdir_{1}/snapshot_{1} -I 2 -s 8 -o ${dir_sim_data}/halos_vr/out_{1} -C $dir_vrconf/sample_dmcosmological_6dfof_subhalo.cfg 2> stf.log" ::: {001..050}
