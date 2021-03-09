@@ -1,6 +1,7 @@
 #!/bin/bash
 softlen1=0.0065
 timestep=0.01
+softlen0=$softlen1
 # z_in=24
 # Om0=0.3063375
 # OmL=0.6936625
@@ -136,8 +137,8 @@ GravityConstantInternal  0
  
 
 %---- Gravitational softening length
-SofteningComovingClass0      0.5           ; 
-SofteningMaxPhysClass0       0.5
+SofteningComovingClass0      $softlen0           ;
+SofteningMaxPhysClass0       $softlen0 
 
 SofteningComovingClass1      $softlen1           ;
 SofteningMaxPhysClass1       $softlen1 
