@@ -7,6 +7,7 @@ cd $PBS_O_WORKDIR
 export dir_rsconf=$HOME/cosmo-sims/rockstar/
 export simnm=${simnm:-L200_N256_Cp18} rund=${rund:-r1}
 export dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
+export L=${boxsize:-200}
 # echo Hello > hello1.txt
 mkdir -p ${dir_sim_data}/halos_rs
 cd ${dir_sim_data}/halos_rs
@@ -23,7 +24,7 @@ rockstar -c ${dir_sim_data}/halos_rs/auto-rockstar.cfg
 echo "cd ${dir_sim_data}/halos_rs; source ~/.bashrc; ~/bin/rockstar -c ${dir_sim_data}/halos_rs/auto-rockstar.cfg;"
 # sleep 100
 wait $rspid;
-L=$boxsize $dir_rsconf/get_parent_info.sh
+$dir_rsconf/get_parent_info.sh
 
 
 
