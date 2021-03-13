@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l walltime=30:00:00
+#PBS -l walltime=50:00:00
 #PBS -l select=8:ncpus=32:mpiprocs=8:mem=370GB
 #PBS -N job-velociraptor
 source ~/.bashrc
@@ -28,7 +28,7 @@ mpirun -np 64 -machinefile $PBS_NODEFILE ~/bin/stfp -i ${dir_sim_data}/snaps/sna
 
 # for i in {000..020}
 # do 
-#     mpirun -np 64 -machinefile $PBS_NODEFILE ~/bin/stfp -i ${dir_sim_data}/snaps/snapdir_$i/snapshot_$i -I 2 -s 8 -Z 8 -o ${dir_sim_data}/halos_vr_${space}/out_$i -C $dir_vrconf/sample_dmcosmological_${space}fof_subhalo.cfg 2> stf.log;
+#     mpirun -np 64 -machinefile $PBS_NODEFILE ~/bin/stfp -i ${dir_sim_data}/snaps/snapdir_$i/snapshot_$i -I 2 -s 8 -Z 8 -o ${dir_sim_data}/halos_vr_${space}/out_$i -C $dir_vrconf/params-minimal.cfg 2> stf.log;
 # done
 
 # ~/bin/stf -i ${dir_sim_data}/snaps/snapdir_{1}/snapshot_{1} -I 2 -s 8 -o ${dir_sim_data}/halos_vr/out_{1} -C $dir_vrconf/sample_dmcosmological_6dfof_subhalo.cfg 2> stf.log
