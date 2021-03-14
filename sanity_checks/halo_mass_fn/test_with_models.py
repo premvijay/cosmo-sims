@@ -37,7 +37,8 @@ parser.add_argument('--suffix', type=str)
 
 args = parser.parse_args()
 
-L = int(args.simnm.split('_')[0][1:])
+L = 200
+# L = int(args.simnm.split('_')[0][1:])
 # i = args.i
 runds = args.runds.split(' ')
 rund = runds[0]
@@ -59,8 +60,8 @@ siminfo = vrpy_tools.ReadSimInfo(os.path.join(dir_simdata_vr, f'out_{args.i:03d}
 z = 1/siminfo['ScaleFactor'] - 1
 Om_m = siminfo['Omega_m']
 
-# p18py = Planck18.clone(name='Planck18 modified', H0=siminfo['h_val']*siminfo['Hubble_unit'], Om0=siminfo['Omega_m'], Ob0=siminfo['Omega_b'],)
-p18py = Planck18
+p18py = Planck18.clone(name='Planck18 modified', H0=siminfo['h_val']*siminfo['Hubble_unit'], Om0=siminfo['Omega_m'], Ob0=0.0484103)
+# p18py = Planck18
 print(p18py)
 
 tnk_inp_fn = {}
@@ -102,16 +103,17 @@ for rund in runds:
     dir_simdata = os.path.join(dir_simdata_allruns, rund)
     dir_simdata_vr = os.path.join(dir_simdata, halos_vr_dirname)
     dir_simdata_rs = os.path.join(dir_simdata, 'halos_rs')
+    # dir_simdata_rs = '/scratch/cprem/sims/L200_N512_Cp18/r1/halos_rs/'
 
     hal_rs = pd.read_csv(os.path.join(dir_simdata_rs, f'out_wp_{args.i:d}.list'), sep=r'\s+', header=0, skiprows=list(range(1,16)), engine='c')
     hal_rs = hal_rs[hal_rs['PID']==-1]
+    hal_rs = hal_rs[abs(2*hal_rs['T/|U|']-1.2)<.6]
 
     hal_vr = tables.open_file(os.path.join(dir_simdata_vr, f'out_{args.i:03d}.properties.0'), 'r')
 
-    kin_ratio = 2*hal_vr.root.Ekin[:] /np.abs(hal_vr.root.Epot[:]); print(kin_ratio<1.5)
-    # select_virial = np.where(np.logical_and( kin_ratio > 0.5, kin_ratio < 1.5  ))
+    kin_ratio = 2*hal_vr.root.Ekin[:] /np.abs(hal_vr.root.Epot[:])
 
-    select_hal = np.where(np.logical_and(hal_vr.root.hostHaloID[:]==-1, abs(kin_ratio-1) < 0.5  ))
+    select_hal = np.where(np.logical_and(hal_vr.root.hostHaloID[:]==-1, abs(kin_ratio-1.2)<.6))
 
     num_hal_vr = select_hal[0].shape[0]
     num_hal_rs = hal_rs['#ID'].shape[0]
@@ -119,17 +121,17 @@ for rund in runds:
     print(f"Number of host halos found by ROCKSTAR is {num_hal_rs}.")
     print(f"Number of host halos found by VELOCIraptor is {num_hal_vr}.")
 
-    offset_Mfactor = 0.1687
+    offset_Mfactor = 0 #.1687
     hist_rsvir += np.histogram(np.log10(hal_rs['Mvir']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
     hist_rs200m += np.histogram(np.log10(hal_rs['M200b']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
     hist_rs200c += np.histogram(np.log10(hal_rs['M200c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
     hist_rs500c += np.histogram(np.log10(hal_rs['M500c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
 
-    hist_vrvir += np.histogram(np.log10(hal_vr.root.Mvir[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vrvir += np.histogram(np.log10(hal_vr.root.Mass_BN98[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
     hist_vr200m += np.histogram(np.log10(hal_vr.root.Mass_200mean[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
     hist_vr200c += np.histogram(np.log10(hal_vr.root.Mass_200crit[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
     hist_vr500c += np.histogram(np.log10(hal_vr.root.SO_Mass_500_rhocrit[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vrfof += np.histogram(np.log10(hal_vr.root.Mass_BN98[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vrfof += np.histogram(np.log10(hal_vr.root.Mass_FOF[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
 
 
     hal_vr.close()  
@@ -210,12 +212,12 @@ ax2.set_xlabel(r'log(M) where mass is in $h^{-1}~M_{\odot}$')
 ax1.set_ylabel(r'$\frac{dn}{d (\log ~M)}$ in $h^{3}Mpc^{-3}$')
 ax1.set_title(f'Halo mass function at redshift z = {z:.3g}')
 ax1.set_xlim(10, 15)
-ax1.set_ylim(1e-6,1e-1)
+ax1.set_ylim(1e-6,1e0)
 ax1.set_yscale('log')
 
 lines = ax1.get_lines()
 legend1 = ax1.legend([pltrsm200c, pltvrm200c, plttkm200c], ["Rockstar", "Velociraptor", "Tinker 2008"], loc=1)
-legend2 = ax1.legend([pltvrmvir, pltvrm200m, pltvrm200c, pltvrm500c, pltvrmfof], [r'$M_{\rm{vir}}$', r'$M_{\rm{200m}}$', r'$M_{\rm{200c}}$', r'$M_{\rm{500c}}$', r'$M_{\rm{BN98}}$'], loc=3)
+legend2 = ax1.legend([pltvrmvir, pltvrm200m, pltvrm200c, pltvrm500c, pltvrmfof], [r'$M_{\rm{vir}}$', r'$M_{\rm{200m}}$', r'$M_{\rm{200c}}$', r'$M_{\rm{500c}}$', r'$M_{\rm{FOF}}$'], loc=3)
 ax1.add_artist(legend1)
 ax1.add_artist(legend2)
 
@@ -234,7 +236,7 @@ ax2.plot(bins_cen, hist_vrvir/tnk_inp_fn['mvir'](bins_cen), color=colors[0])
 ax2.plot(bins_cen, hist_vr200m/tnk_inp_fn['m200m'](bins_cen), color=colors[1])
 ax2.plot(bins_cen, hist_vr200c/tnk_inp_fn['m200c'](bins_cen), color=colors[2])
 ax2.plot(bins_cen, hist_vr500c/tnk_inp_fn['m500c'](bins_cen), color=colors[3])
-ax2.plot(bins_cen, hist_vrfof/tnk_inp_fn['mvir'](bins_cen), color=colors[4])
+# ax2.plot(bins_cen, hist_vrfof/tnk_inp_fn['mvir'](bins_cen), color=colors[4])
 ax2.plot([],[], color=colors[0], label='Velociraptor/Tinker')
 
 ax2.set_ylim(0.55,1.6)
@@ -256,7 +258,8 @@ ax2.grid(b=True, which='minor', ls='dashdot')
 # plt.show()
 
 fig.tight_layout()
-os.makedirs(f"plots/{args.simnm}", exist_ok=True)
-# fig.savefig(f"plots/{args.simnm}/hmf_{''.join(runds)}_{args.i:03d}.png", dpi=200)
+plot_path = f"plots/{args.simnm}/hmf/"
+os.makedirs(plot_path, exist_ok = True)
 plot_suffix = f'-{args.suffix:s}' if args.suffix is not None else ''
-fig.savefig(f"plots/{args.simnm}/hmf_{''.join(runds)}_{args.i:03d}{plot_suffix:s}.pdf")
+# fig.savefig(f"{plot_path}{''.join(runds)}_{args.i:03d}{plot_suffix:s}.pdf")
+fig.savefig(f"{plot_path}{''.join(runds)}_{args.i:03d}{plot_suffix:s}.png", dpi=200)

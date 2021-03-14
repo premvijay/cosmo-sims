@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -l walltime=50:00:00
+#PBS -l select=6:ncpus=25:mem=70GB
+#PBS -N job-test-hmf
+source ~/.bashrc
+cd $PBS_O_WORKDIR
+conda activate conforg
+export simnm=bdm_cdm1024 rund=r1
+# parallel -j 25 --sshloginfile $PBS_NODEFILE "conda activate conforg; cd $PBS_O_WORKDIR; source ~/.bashrc; python  halo_mass_fn/test_with_models.py --simnm ${simnm} --rund 'r1' --i {}" ::: {51..200}
+conda deactivate
+ffmpeg -framerate 2 -start_number 51 -i plots/$simnm/hmf/${rund}_%03d.png -vf scale=2000:1400 -lossless 1 -y plots/$simnm/hmf_${rund}_evolve.webm
+rm plots/$simnm/hmf/${rund}_*.png
