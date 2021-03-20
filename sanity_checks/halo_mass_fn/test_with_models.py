@@ -37,8 +37,8 @@ parser.add_argument('--suffix', type=str)
 
 args = parser.parse_args()
 
-L = 200
-# L = int(args.simnm.split('_')[0][1:])
+# L = 200
+L = int(args.simnm.split('_')[0][1:])
 # i = args.i
 runds = args.runds.split(' ')
 rund = runds[0]
@@ -105,36 +105,39 @@ for rund in runds:
     dir_simdata_rs = os.path.join(dir_simdata, 'halos_rs')
     # dir_simdata_rs = '/scratch/cprem/sims/L200_N512_Cp18/r1/halos_rs/'
 
-    hal_rs = pd.read_csv(os.path.join(dir_simdata_rs, f'out_wp_{args.i:d}.list'), sep=r'\s+', header=0, skiprows=list(range(1,16)), engine='c')
-    hal_rs = hal_rs[hal_rs['PID']==-1]
-    hal_rs = hal_rs[abs(2*hal_rs['T/|U|']-1.2)<.6]
+    hal_rs_all = pd.read_csv(os.path.join(dir_simdata_rs, f'out_wp_{args.i:d}.list'), sep=r'\s+', header=0, skiprows=list(range(1,16)), engine='c')
+    hal_rs_all = hal_rs_all.loc[hal_rs_all.PID==-1]
+    hal_rs_all['kin_rat'] = 2*hal_rs_all['T/|U|']
 
-    hal_vr = tables.open_file(os.path.join(dir_simdata_vr, f'out_{args.i:03d}.properties.0'), 'r')
+    # hal_vr = tables.open_file(os.path.join(dir_simdata_vr, f'out_{args.i:03d}.properties.0'), 'r')
+    hal_vr_dict, N_hal_tot_vr = vrpy_tools.ReadPropertyFile(os.path.join(dir_simdata_vr, f'out_{args.i:03d}'), ibinary=2, isiminfo=False, iunitinfo=False, iconfiginfo=False)
+    hal_vr_all = pd.DataFrame.from_dict(hal_vr_dict)
+    hal_vr_all = hal_vr_all.loc[hal_vr_all.hostHaloID==-1]
+    hal_vr_all['kin_rat'] = 2*hal_vr_all.Ekin/np.abs(hal_vr_all.Epot)
+    
 
-    kin_ratio = 2*hal_vr.root.Ekin[:] /np.abs(hal_vr.root.Epot[:])
+    hal_rs = hal_rs_all.loc[hal_rs_all.kin_rat.between(0.5,1.8)]
+    hal_vr = hal_vr_all.loc[hal_vr_all.kin_rat.between(0.5,1.8)]
 
-    select_hal = np.where(np.logical_and(hal_vr.root.hostHaloID[:]==-1, abs(kin_ratio-1.2)<.6))
-
-    num_hal_vr = select_hal[0].shape[0]
-    num_hal_rs = hal_rs['#ID'].shape[0]
+    num_hal_vr = hal_vr.shape[0]
+    num_hal_rs = hal_rs.shape[0]
 
     print(f"Number of host halos found by ROCKSTAR is {num_hal_rs}.")
     print(f"Number of host halos found by VELOCIraptor is {num_hal_vr}.")
 
     offset_Mfactor = 0 #.1687
-    hist_rsvir += np.histogram(np.log10(hal_rs['Mvir']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
-    hist_rs200m += np.histogram(np.log10(hal_rs['M200b']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
-    hist_rs200c += np.histogram(np.log10(hal_rs['M200c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
-    hist_rs500c += np.histogram(np.log10(hal_rs['M500c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
+    hist_rsvir += np.histogram(np.log10(hal_rs.Mvir), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
+    hist_rs200m += np.histogram(np.log10(hal_rs.M200b), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
+    hist_rs200c += np.histogram(np.log10(hal_rs.M200c), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
+    hist_rs500c += np.histogram(np.log10(hal_rs.M500c), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, )[0]
 
-    hist_vrvir += np.histogram(np.log10(hal_vr.root.Mass_BN98[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vr200m += np.histogram(np.log10(hal_vr.root.Mass_200mean[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vr200c += np.histogram(np.log10(hal_vr.root.Mass_200crit[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vr500c += np.histogram(np.log10(hal_vr.root.SO_Mass_500_rhocrit[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    hist_vrfof += np.histogram(np.log10(hal_vr.root.Mass_FOF[select_hal])+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-
-
-    hal_vr.close()  
+    hist_vrvir += np.histogram(np.log10(hal_vr.Mass_BN98)+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vr200m += np.histogram(np.log10(hal_vr.Mass_200mean)+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vr200c += np.histogram(np.log10(hal_vr.Mass_200crit)+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vr500c += np.histogram(np.log10(hal_vr.SO_Mass_500_rhocrit)+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    hist_vrfof += np.histogram(np.log10(hal_vr.Mass_FOF)+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
+    
+    hal_vr.close() 
     del hal_rs, hal_vr
 
 num_runs = len(runds)
@@ -191,15 +194,7 @@ pltvrm200m, = ax1.plot(bins_cen, hist_vr200m, color=colors[1])
 pltvrm200c, = ax1.plot(bins_cen, hist_vr200c, color=colors[2])
 pltvrm500c, = ax1.plot(bins_cen, hist_vr500c, color=colors[3])
 pltvrmfof, = ax1.plot(bins_cen, hist_vrfof, color=colors[4])
- 
-# rsvir = ax1.hist(np.log10(hal_rs['Mvir']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, histtype='step', log=True,label="RS_Mvir")
-# rs200c = ax1.hist(np.log10(hal_rs['M200c']), bins=bins_edges, weights=1*np.ones(num_hal_rs)/bw/L**3, histtype='step', log=True,label="RS_M200c")
 
-# vr200c= ax1.hist(np.log10(hal_vr.root.Mass_200crit[select_hal]) + 10-0.1, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3, histtype='step', log=True, label="VR_M200c")
-# vrvir= ax1.hist(np.log10(hal_vr.root.Mvir[select_hal]) + 10, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3, histtype='step', log=True, label="VR_Mvir")
-# vrfof= ax1.hist(np.log10(hal_vr.root.Mass_FOF[select_hal]) + 10, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3, histtype='step', log=True, label="VR_MFOF")
-
-# tinkerplot = ax1.plot(np.log10(hal_mass_fn.m), hal_mass_fn.dndlog10m, label="Tinker-08", color='black')
 
 mpl.rcParams['lines.linestyle'] = 'solid'
 # ax1.plot(bins_cen, tinker_m200c(bins_cen), label="Tinker-08", color='black')
@@ -261,5 +256,5 @@ fig.tight_layout()
 plot_path = f"plots/{args.simnm}/hmf/"
 os.makedirs(plot_path, exist_ok = True)
 plot_suffix = f'-{args.suffix:s}' if args.suffix is not None else ''
-# fig.savefig(f"{plot_path}{''.join(runds)}_{args.i:03d}{plot_suffix:s}.pdf")
-fig.savefig(f"{plot_path}{''.join(runds)}_{args.i:03d}{plot_suffix:s}.png", dpi=200)
+fig.savefig(f"{plot_path}{''.join(runds)}_{args.i:03d}{plot_suffix:s}.pdf")
+# fig.savefig(f"{plot_path}{''.join(runds)}_{args.i:03d}{plot_suffix:s}.png", dpi=200)
