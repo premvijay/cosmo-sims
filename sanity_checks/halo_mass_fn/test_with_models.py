@@ -80,7 +80,7 @@ for model, massdef, overdensity in zip(["SOVirial", 'SOMean', 'SOCritical', 'SOC
 
 # hal_mass_fn.update(mdef_model  = model, mdef_params = {"overdensity":200,})
 
-bw=0.04
+bw=0.03
 bins_edges = np.arange(8,15,bw)
 bins_cen = (bins_edges[:-1] + bins_edges[1:]) / 2
 
@@ -136,8 +136,7 @@ for rund in runds:
     hist_vr200c += np.histogram(np.log10(hal_vr.Mass_200crit)+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
     hist_vr500c += np.histogram(np.log10(hal_vr.SO_Mass_500_rhocrit)+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
     hist_vrfof += np.histogram(np.log10(hal_vr.Mass_FOF)+offset_Mfactor, bins=bins_edges, weights=1*np.ones(num_hal_vr)/bw/L**3)[0]
-    
-    hal_vr.close() 
+     
     del hal_rs, hal_vr
 
 num_runs = len(runds)
