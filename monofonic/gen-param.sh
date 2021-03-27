@@ -67,7 +67,7 @@ sigma_8         = $sig8
 nspec           = $ns
 # A_s             = 2.148752e-09 # can use instead of sigma_8
 
-ZeroRadiation   = true # For Back-scaling: set to false if your simulation code can deal with Omega_r!=0
+# ZeroRadiation   = true # For Back-scaling: set to false if your simulation code can deal with Omega_r!=0
 
 [random]
 ## generator = ... specifies the random field generator plugin module
