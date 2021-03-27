@@ -1,0 +1,28 @@
+#!/bin/bash
+#PBS -l walltime=50:00:00
+#PBS -l select=8:ncpus=32:mpiprocs=1:mem=370GB
+#PBS -N job-music
+source ~/.bashrc
+
+export simnm=${simnm:-L200_N256_Cp18} rund=${rund:-r1} seed=${seed:-8899}
+dir_music=$HOME/cosmo-sims/music/
+dir_sim=$dir_music/$simnm/
+mkdir -p $dir_sim
+cd $dir_sim
+
+dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
+dir_ics=$dir_sim_data/ics/
+
+
+$dir_music/write-param.sh
+# export OMP_NUM_THREADS=32
+module load intel-2019.5
+echo $dir_sim/param_$rund.txt
+cd $dir_sim
+# module load hdf5_p/1.10.7
+export OMP_NUM_THREADS=32
+MUSIC $dir_sim/param_$rund.txt
+
+# cd $dir_ics
+# shopt -s extglob
+# for f in !(*.hdf5); do mv "$f" "$f.hdf5"; done

@@ -1,0 +1,41 @@
+[output]
+format			= gadget2
+filename		= /scratch/cprem/sims/L200_N256_Cp18_bar/r12//ics//music_24
+gadget_num_files	= 8
+
+[random]
+seed[8]		= 222222
+cubesize	= 64
+
+[setup]
+boxlength		= 200
+zstart			= 24
+levelmin		= 8
+levelmin_TF		= 8
+levelmax		= 8
+padding			= 4
+overlap			= 4
+align_top		= no
+periodic_TF		= no
+baryons			= yes
+use_2LPT		= yes
+use_LLA			= no
+kspace_TF		= yes
+
+[cosmology]
+Omega_m         = 0.3063375
+Omega_L         = 0.6936625
+Omega_b         = 0.0484103
+H0              = 67.81
+sigma_8         = 0.815
+nspec           = 0.9677
+transfer	= camb_file
+transfer_file	= /mnt/home/student/cprem/cosmo-sims/camb//p18_transfer_out.dat
+
+[poisson]
+kspace          = yes
+fft_fine        = no
+accuracy        = 1e-5
+smoother        = gs
+laplace_order   = 6
+grad_order      = 6
