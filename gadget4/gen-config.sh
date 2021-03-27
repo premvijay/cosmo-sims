@@ -1,9 +1,10 @@
 #!/bin/bash
-grid=1024
+# grid=1024
 nmpil=2
 ncpus=32
 echo $2
 eval "$2"
+
 printf "PERIODIC                                     # enables periodic boundary condistions
 NTYPES=6                                     # number of particle types
 GADGET2_HEADER                               # allows reading of snapshots with GADGET-2/3 header format
@@ -15,3 +16,17 @@ DOUBLEPRECISION_FFTW                         # if set, carries out FFTs in doubl
 POWERSPEC_ON_OUTPUT                          # computes a matter power spectrum when the code writes a snapshot output
 NUMBER_OF_MPI_LISTENERS_PER_NODE=$nmpil           # set such that the number of MPI-ranks per node and listener is maller than MAX_NUMBER_OF_RANKS_WITH_SHARED_MEMORY
 MAX_NUMBER_OF_RANKS_WITH_SHARED_MEMORY=$ncpus    # default is 64, but can also be set to 32\n" > $1
+
+if [ "$bary" = "yes" ]
+then
+printf "COOLING
+STARFORMATION\n" >> $1
+fi
+
+if [ "$ngenic" = "yes" ]
+then
+printf "NGENIC=$grid
+NGENIC_2LPT
+CREATE_GRID\n" >> $1
+fi
+

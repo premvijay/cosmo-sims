@@ -1,7 +1,7 @@
 #!/bin/bash
-softlen1=0.0065
-timestep=0.01
-softlen0=$softlen1
+# softlen1=0.0065
+# timestep=0.01
+
 # z_in=24
 # Om0=0.3063375
 # OmL=0.6936625
@@ -10,6 +10,9 @@ softlen0=$softlen1
 # boxsize=200.0
 echo $2
 eval "$2"
+
+softlen0=$softlen1
+softlen2=$softlen1
 
 dir_root=$HOME/cosmo-sims/gadget4/
 dir_sim=$dir_root/$simnm/
@@ -143,8 +146,8 @@ SofteningMaxPhysClass0       $softlen0
 SofteningComovingClass1      $softlen1           ;
 SofteningMaxPhysClass1       $softlen1 
 
-SofteningComovingClass2      0.005         ;
-SofteningMaxPhysClass2       0.005
+SofteningComovingClass2      $softlen2         ;
+SofteningMaxPhysClass2       $softlen2
 
 
 
@@ -158,3 +161,31 @@ SofteningClassOfPartType5    2
 
 #MinGasHsmlFractional 0.25" > $1
 
+if [ "$bary" = "yes" ]
+then
+printf '%s\n' "%----- Star formation
+MaxSfrTimescale     1.5         % Gas consumption timescale (multi-phase model)
+FactorSN            0.1         % beta, mass fraction of massive stars (multi-phase model)
+FactorEVP           1000        % A_0, evaporation parameter (multi-phase model)
+TempSupernova       1e+08       % T_SN, effective supernova temperature,sets feedback energy (multi-phase model)
+TempClouds          1000        % temperature of cold clouds (multi-phase model)
+CritOverDensity     57.7        % overdensity threshold value for cosological sims
+CritPhysDensity     0           % critical physical density for star formation (in cm^(-3))
+TreecoolFile        $dir_root/TREECOOL" >> $1
+fi
+
+if [ "$ngenic" = "yes" ]
+then
+printf '%s\n' "%----- N-GenIC
+NSample                                           $Npart
+GridSize                                          $Npart
+Seed                                              $seed
+SphereMode                                        0
+PowerSpectrumType                                 1
+ReNormalizeInputSpectrum                          1
+PrimordialIndex                                   $ns
+ShapeGamma                                        0.21
+Sigma8                                            $sig8
+PowerSpectrumFile                                 powerspec
+InputSpectrum_UnitLength_in_cm                    3.085678e24" >> $1
+fi
