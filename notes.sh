@@ -10,7 +10,9 @@ simnm=L40_N512_Cp18 rund=r1 ./gen-param.sh $simnm/param_r1.txt
 rockstar -c L40_N512_Cp18/param_r1.txt
 simnm=L40_N512_Cp18 rund=r1 L=40 ./get_parent_info.sh
 
+rund=r12 z_in=24 bary=yes softlen1=0.02 tstep=0.02 seed=222222 compgad=1 multi-jobs.sh 200 256 p18
 
+rund=r21 z_in=24 bary=yes softlen1=0.02 tstep=0.02 seed=111111 compgad=1 ngenic=yes multi-jobs.sh 200 256 p18
 
 # An important finding is that Inclusive Halo mass calculation. Changing from 0 to 3 affect 200m, 200c, 500c but not Mvir
 # However changing from 2 to 3 affect only Mvir (hmf shifts up for 2)

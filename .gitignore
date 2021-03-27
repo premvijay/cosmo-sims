@@ -1,5 +1,6 @@
 *.pyc
 gadget4/*/build/*
+gadget4/*/r*/build/*
 gadget4/*/Gadget4
 gadget4/*/compile.log
 job-*.e*
@@ -18,3 +19,6 @@ tmp/
 *.log
 logs/test-hmf.*
 out_file1.txt
+*.bin
+*.noise
+*log.txt
