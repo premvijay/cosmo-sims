@@ -28,5 +28,9 @@ then
 printf "NGENIC=$grid
 NGENIC_2LPT
 CREATE_GRID\n" >> $1
+if [ "$bary" = "yes" ]
+then
+printf "GENERATE_GAS_IN_ICS\n" >> $1
+fi
 fi
 
