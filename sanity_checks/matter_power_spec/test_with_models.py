@@ -8,11 +8,13 @@ import pandas as pd
 import argparse
 import pdb
 from munch import Munch
+import tables
 
 import camb
 from camb import model, initialpower
 
 from gadget_tools import Snapshot
+from field_tools import compute_power_spec
 from fitting_fns import halofit
 
 
@@ -20,7 +22,7 @@ parser = argparse.ArgumentParser(
     description='Density field evolution from Gadget simulation.',
     usage= 'python ./visualize_simulation.py')
 
-parser.add_argument('--simdir', default='/scratch/aseem/sims/', type=str, help='Directory path for all simulations')
+parser.add_argument('--simdir', default='/scratch/cprem/sims/', type=str, help='Directory path for all simulations')
 
 parser.add_argument('--simname', type=str, default='bdm_cdm1024', help='Directory name containing the saved data')
 parser.add_argument('--cosmo', type=str, default='P18', help='cosmology parameters data from')
@@ -75,7 +77,7 @@ def snapfilen_prefix(snapdirectory, snap_i):
 
 def snapfilen(snapdirectory, snap_i):
     snapfilen_prefix_i = snapfilen_prefix(snapdirectory, snap_i)
-    if os.path.exists(snapfilen_prefix_i):
+    if os.path.exists(snapfilen_prefix_i) or os.path.exists(f'{snapfilen_prefix_i:s}.hdf5'):
         return snapfilen_prefix_i
     else:
         return snapfilen_prefix_i + '.0'
@@ -119,11 +121,6 @@ def lighter(color): return adjust_lightness(color, 1.5)
 
 def darker(color): return adjust_lightness(color, 0.7)
 
-# simnames = ['bdm_cdm1024'
-
-# transfer_func_file = '/mnt/home/faculty/caseem/config/transfer/classTf_om0.14086_Ok0.0_ob0.02226_h0.6781_ns0.9677.txt'
-
-# transfer_df = pd.read_csv(transfer_func_file, sep='\s+',header=None)
 
 # i_list = list(range(50,201,50))
 # i_list = [0,1]
@@ -143,11 +140,10 @@ for i in i_list:
     redshifts.append(snap.redshift)
 
 
-#Now get matter power spectra and sigma8 at redshift 0 and 0.8
 pars_camb = camb.CAMBparams()
 pars_camb.set_cosmology(H0=cos_pars.h*100, ombh2=cos_pars.Ombh2, omch2=cos_pars.Omch2)
 pars_camb.InitPower.set_params(ns=cos_pars.ns)
-#Note non-linear corrections couples to smaller scales than you want
+#Note non-linear corrections couples to smaller scales than we want
 pars_camb.set_matter_power(redshifts=redshifts, kmax=10*k_nyq)
 
 #Linear spectra
@@ -165,24 +161,13 @@ kh_camb_nonlin, z_camb_nonlin, pk_camb_nonlin = results_camb.get_matter_power_sp
 
 
 
-
-
 fig1, ax2 = plt.subplots(1, figsize=(7.5,7), dpi=150)
 plt.rcParams['lines.linewidth'] = 1
 
 # ax2.plot([],[], ' ', label=f"Scheme-{scheme}, Grid-size: {grid_size:d}")
 
-
-
 for index, i in enumerate(i_list[::-1]):
     color=next(ax2._get_lines.prop_cycler)['color']
-    # lightcolor = adjust_lightness(color, 0.5)
-    # darkcolor = adjust_lightness(color, 2)
-
-    # transfer_df = pd.read_csv('/mnt/home/faculty/caseem/config/transfer/classTf_om0.14086_Ok0.0_ob0.02226_h0.6781_ns0.9677.txt', sep='\s+',header=None)
-
-    # k_full = transfer_df[0]
-    # pk_lin = transfer_df[1]**2*transfer_df[0] * (D1(snap.redshift, snap.Omega_m_0)/ D1(0, snap.Omega_m_0))**2
 
     k_full = kh_camb
     pk_lin = pk_camb[index]
@@ -191,9 +176,7 @@ for index, i in enumerate(i_list[::-1]):
     ax2.plot(k_full, pk_lin, color=color, linestyle=(0, (1, 1)), zorder=3)
     ax2.set_xscale('log')
     ax2.set_yscale('log')
-    # ax2.plot(transfer_df[0], transfer_df[1]**2*transfer_df[0]/ (1+snap.redshift), color=color, linestyle='dotted', label='linear theory')
-    # ax2.set_xscale('log')
-    # ax2.set_yscale('log')
+
 
     ax2.plot(kh_camb_nonlin, pk_camb_nonlin[index], linestyle='solid', color=darker(color), zorder=1)
 
@@ -202,12 +185,6 @@ for index, i in enumerate(i_list[::-1]):
     pk_fit.compute_params(param_from='smith')
     print(vars(pk_fit))
     # ax2.plot(kh_camb_nonlin, pk_fit.P(kh_camb_nonlin), linestyle='solid', color=darker(color), zorder=2)
-
-    # Pkdir = os.path.join(savesdir,'power_spectrum')
-    # infodir = os.path.join(savesdir,'info')
-    
-    # power_spec = pd.read_csv(os.path.join(Pkdir, 'Pk_{0:03d}.csv'.format(i)), sep='\t', dtype='float64')
-    # power_spec.columns = ['k', 'Pk']
 
     lin_bin = np.linspace(np.sqrt(k_start*k_nyq),k_nyq, 30)
     log_bin = np.logspace(np.log10(k_start),np.log10(k_nyq), 25)
@@ -221,49 +198,56 @@ for index, i in enumerate(i_list[::-1]):
     
     # if interlaced:
     
-    power_spec_allrealz = None
+    power_spec_all = None
 
     for rundir in rundirs:
         snapdir = os.path.join(args.simdir, args.simname, rundir, 'snaps')
         snap = Snapshot(snapfilen(snapdir, i))
-        savesdir = os.path.join('/scratch/cprem/sims', args.simname, rundir, 'global', scheme, '{0:d}'.format(grid_size))
+        savesdir = os.path.join(args.simdir, args.simname, rundir)
         print(savesdir)
+        dens_griddir = os.path.join(savesdir,'meshgrid')
         Pkdir = os.path.join(savesdir,'power_spectrum')
 
-        # power_spec = pd.read_csv(os.path.join(Pkdir, 'Pk{1}_{0:03d}.csv'.format(i,inlcd_str)), sep='\t', dtype='float64', columns=['k', 'Pk'])
-        # power_spec.columns = ['k', 'Pk']
+        os.makedirs(Pkdir, exist_ok=True)
+
+        pk_filepath = os.path.join(Pkdir, f'{scheme:s}_{grid_size:d}{inlcd_str}_{i:03d}.csv' )
         
-        if power_spec_allrealz is None:
-            power_spec_allrealz = pd.read_csv(os.path.join(Pkdir, 'Pk{1}_{0:03d}.csv'.format(i,inlcd_str)), sep='\t', dtype='float64', names=['k', 'Pk'], header=0)
-            power_spec_existing = pd.read_csv('/scratch/aseem/sims/bdm_cdm1024/r1/Pk_200.txt',comment='#', sep='\t',names=['k','pk','ph','pcross'])
-            power_spec_folding = pd.read_csv(os.path.join(snapdir,f"powerspecs/powerspec_{i:03d}.txt"), sep='\s+', usecols=[0,1], names=['k', 'Delk'], skiprows=5)
+        h5file = tables.open_file( os.path.join(dens_griddir, f'{scheme:s}_{grid_size:d}_{i:03d}.hdf5'), 'r' )
+
+        if interlaced:
+            power_spec_this = compute_power_spec(h5file.root.PartType1.density,snap.box_size, interlace_with_FX=h5file.root.PartType1.density_shifted, Win_correct_scheme=scheme, grid_size=grid_size)
+
         else:
-            power_spec_allrealz.append( pd.read_csv(os.path.join(Pkdir, 'Pk{1}_{0:03d}.csv'.format(i,inlcd_str)), sep='\t', dtype='float64', names=['k', 'Pk'], header=0) )
-            try:
-                power_spec_existing.append( pd.read_csv('/scratch/aseem/sims/bdm_cdm1024/r1/Pk_200.txt',comment='#', sep='\t',names=['k','pk','ph','pcross']) )
-            except:
-                print('not existing')
-            power_spec_folding.append( pd.read_csv(os.path.join(snapdir,f"powerspecs/powerspec_{i:03d}.txt"), sep='\s+', usecols=[0,1], names=['k', 'Delk'], skiprows=5) )
-            
+            power_spec_this = compute_power_spec(h5file.root.PartType1.density,snap.box_size, interlace_with_FX=None, Win_correct_scheme=scheme, grid_size=grid_size)
 
-    power_spec_folding.sort_values('k', inplace=True)
-    power_spec_folding = power_spec_folding[power_spec_folding['k'].between(1e-3,1e2)]
-    power_spec_folding_grouped1 = power_spec_folding.groupby(pd.cut(power_spec_folding['k'], bins=merge_bin)).mean()
-    power_spec_folding_grouped1['pk'] = power_spec_folding_grouped1['Delk']*power_spec_folding_grouped1['k']**-3*2*np.pi**2
+        power_spec_this_grp = power_spec_this.groupby(pd.cut(power_spec_this['k'], bins=merge_bin)).mean()
+        power_spec_this_grp.to_csv(pk_filepath, sep='\t', index=False, float_format='%.8e', header=['k (h/Mpc)', 'P(k) (Mpc/h)^3'])
 
-    # print(power_spec_folding_grouped1)
+        h5file.close()
 
-    power_spec_grouped1 = power_spec_allrealz.groupby(pd.cut(power_spec_allrealz['k'], bins=merge_bin)).mean()
-    # win_correct_power = 2*0+1 if interlaced else 2*0
-    # power_spec_grouped1['Pk'] /= np.sinc(power_spec_grouped1['k']/(2*k_nyq))**(win_correct_power)
-    # power_spec_grouped1['Pk'] /= np.cos(np.pi*power_spec_grouped1['k']/(4*k_nyq))**(win_correct_power)
-    ax2.plot(power_spec_grouped1['k'],power_spec_grouped1['Pk'], color=color, linestyle='dashed', label=f"z={f'{round(snap.redshift,1):f}'.rstrip('0').rstrip('.'):s}")[0]
-    ax2.scatter(power_spec_grouped1['k'],power_spec_grouped1['Pk'], color=color, s=4)
+        power_spec_this_grp = pd.read_csv(pk_filepath, sep='\t', dtype='float64', names=['k', 'Pk'], header=0)
+        power_spec_folding_this = pd.read_csv(os.path.join(snapdir,f"powerspecs/powerspec_{i:03d}.txt"), sep='\s+', usecols=[0,1], names=['k', 'Delk'], skiprows=5)
 
-    # if snap.redshift<1e-5:
-        # power_spec_existing.groupby('k').mean().reset_index().plot('k','pk', loglog=True, ax=ax2, color=lighter(lighter(color)), linestyle='dashed', label='', legend=False)
+        if power_spec_all is None:
+            power_spec_all = power_spec_this_grp.copy()
+            power_spec_folding_all = power_spec_folding_this.copy()
+        else:
+            power_spec_all.append( power_spec_this_grp )
+            power_spec_folding_all.append( power_spec_folding_this )
 
-    power_spec_folding_grouped1.plot('k', 'pk', loglog=True, color=lighter(color), linestyle='dashdot', lw=0.8, ax=ax2, label='', legend=False)
+        # print(power_spec_folding_this)
+
+    power_spec_grp1 = power_spec_all.groupby(pd.cut(power_spec_all['k'], bins=merge_bin)).mean()
+
+    power_spec_folding_all.sort_values('k', inplace=True)
+    power_spec_folding = power_spec_folding_all[power_spec_folding_all['k'].between(1e-3,1e2)]
+    power_spec_folding_grp1 = power_spec_folding.groupby(pd.cut(power_spec_folding['k'], bins=merge_bin)).mean()
+    power_spec_folding_grp1['pk'] = power_spec_folding_grp1['Delk']*power_spec_folding_grp1['k']**-3*2*np.pi**2
+
+    ax2.plot(power_spec_grp1['k'],power_spec_grp1['Pk'], color=color, linestyle='dashed', label=f"z={f'{round(snap.redshift,1):f}'.rstrip('0').rstrip('.'):s}")[0]
+    ax2.scatter(power_spec_grp1['k'],power_spec_grp1['Pk'], color=color, s=4)
+
+    power_spec_folding_grp1.plot('k', 'pk', loglog=True, color=lighter(color), linestyle='dashdot', lw=0.8, ax=ax2, label='', legend=False)
 
 ax2.plot([],[], ' ', label=f"GADGET-4 simulation")
 ax2.plot([],[], linestyle='dashed', color='gray', label=f"  {scheme}-{grid_size:d} grid")
