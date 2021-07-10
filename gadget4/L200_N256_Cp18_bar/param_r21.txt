@@ -1,6 +1,6 @@
 %  Relevant files
 
-InitCondFile	 /scratch/cprem/sims/L200_N256_Cp18_bar/r21//ics//music_24
+InitCondFile	 /scratch/cprem/sims/L200_N256_Cp18_bar/r21//ics//monofonic_24
 OutputDir	 /scratch/cprem/sims/L200_N256_Cp18_bar/r21//snaps/
 
 #EnergyFile         energy.txt
@@ -24,7 +24,7 @@ TimeLimitCPU      691200
 % Code options
 
 
-ICFormat                 1
+ICFormat                 3
 SnapFormat               3
 ComovingIntegrationOn    1
 
@@ -51,7 +51,7 @@ TimeBetSnapshot		1.08379838673
 TimeOfFirstSnapshot	0.2
 
 
-CpuTimeBetRestartFile     1800.0    % here in seconds
+CpuTimeBetRestartFile     300.0    % here in seconds
 TimeBetStatistics         0.05
 
 NumFilesPerSnapshot		 8
@@ -134,7 +134,6 @@ SofteningClassOfPartType5    2
 
 #MinGasHsmlFractional 0.25
 %----- Star formation
-
 MaxSfrTimescale     1.5         % Gas consumption timescale (multi-phase model)
 FactorSN            0.1         % beta, mass fraction of massive stars (multi-phase model)
 FactorEVP           1000        % A_0, evaporation parameter (multi-phase model)

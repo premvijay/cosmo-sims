@@ -39,8 +39,9 @@ parser.add_argument('--outdir', type=str, default='/scratch/cprem/sims/', help='
 args = parser.parse_args()
 
 snapdir = os.path.join(args.simdir, args.simname, args.rundir, 'snaps')
-outdir = os.path.join(args.outdir, args.simname, args.rundir, 'global', args.scheme, '{0:d}'.format(args.grid_size) )
-os.makedirs(outdir, exist_ok=True)
+if args.Pk or args.slice2D:
+    outdir = os.path.join(args.outdir, args.simname, args.rundir, 'global', args.scheme, '{0:d}'.format(args.grid_size) )
+    os.makedirs(outdir, exist_ok=True)
 
 print('Hostname is', socket.gethostname() )
 
@@ -48,6 +49,7 @@ t_now = time()
 print('\n Starting to read snapshots binaries')
 
 def snapfilen_prefix(snapdirectory, snap_i):
+    print(os.path.join(snapdir, f'snapdir_{snap_i:03d}'), os.path.exists(os.path.join(snapdir, f'snapdir_{snap_i:03d}')))
     if os.path.exists(os.path.join(snapdir, f'snapdir_{snap_i:03d}')):
         return os.path.join(snapdir, 'snapdir_{0:03d}/snapshot_{0:03d}'.format(snap_i))
     else:
@@ -89,11 +91,6 @@ print('\n Density assigned for snapshot {0:03d} by scheme {1:s}'.format(args.sna
 t_bef, t_now = t_now, time()
 print(t_now-t_bef)
 
-# infodir = os.path.join(outdir,'info')
-# os.makedirs(infodir, exist_ok=True)
-
-# with open(os.path.join(infodir, 'header_{0:03d}.p'.format(args.snap_i) ),'wb') as headfile:
-#     pickle.dump((snap),headfile)
 
 dens_griddir = os.path.join(args.outdir, args.simname, args.rundir,'meshgrid')
 os.makedirs(dens_griddir, exist_ok=True)

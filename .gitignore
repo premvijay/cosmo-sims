@@ -22,3 +22,4 @@ out_file1.txt
 *.bin
 *.noise
 *log.txt
+sanity_checks/plots/L150_N512_Cp18/old/*

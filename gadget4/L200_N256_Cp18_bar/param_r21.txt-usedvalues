@@ -1,9 +1,9 @@
-InitCondFile                                      /scratch/cprem/sims/L200_N256_Cp18_bar/r21//ics//music_24
+InitCondFile                                      /scratch/cprem/sims/L200_N256_Cp18_bar/r21//ics//monofonic_24
 OutputDir                                         /scratch/cprem/sims/L200_N256_Cp18_bar/r21//snaps/
 SnapshotFileBase                                  snapshot
 OutputListFilename                                dummy.txt
 TimeLimitCPU                                      691200
-ICFormat                                          1
+ICFormat                                          3
 SnapFormat                                        3
 ComovingIntegrationOn                             1
 OutputListOn                                      0
@@ -17,7 +17,7 @@ BoxSize                                           200
 Hubble                                            100
 TimeBetSnapshot                                   1.0838
 TimeOfFirstSnapshot                               0.2
-CpuTimeBetRestartFile                             1800
+CpuTimeBetRestartFile                             300
 TimeBetStatistics                                 0.05
 NumFilesPerSnapshot                               8
 MaxFilesWithConcurrentIO                          8

@@ -9,6 +9,7 @@ Npart=${2:-512}
 cosmology=${3:-p18}
 bary=${bary:-no}
 ngenic=${ngenic:-no}
+outlston=${outlston:-0}
 
 export simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${rund:-r1} seed=${seed-8899}
 if [ "$bary" = yes ]; then export simnm=${simnm}_bar; fi
@@ -33,8 +34,8 @@ mkdir -p $dir_mono/$simnm/
 mkdir -p $dir_music/$simnm/
 mkdir -p $dir_gad/$simnm/$rund
 
-
-echo "grid=$((2*Npart));nmpil=2;ncpus=32;bary=$bary;ngenic=$ngenic" > $dir_gad/$simnm/$rund/compile.info
+#GADGET configuration info
+echo "grid=$((2*Npart));nmpil=1;ncpus=32;bary=$bary;ngenic=$ngenic" > $dir_gad/$simnm/$rund/compile.info
 
 case $cosmology in
   p18)
@@ -52,7 +53,7 @@ esac
 
 echo "$Om0, $OmL, $Omb, $h_par, $ns, $sig8" > $dir_camb/${cosmology}.info   # To compile gadget
 #To generate parameter file for GADGET-4
-echo "Om0=$Om0;OmL=$OmL;Omb=$Omb;h_par=$h_par;ns=$ns;sig8=$sig8;boxsize=$boxsize;Npart=$Npart;z_in=$z_in;cosmo=$cosmology;softlen1=$softlen1;timestep=$tstep;bary=$bary;ngenic=$ngenic;seed=$seed" > $dir_gad/$simnm/param_$rund.info
+echo "Om0=$Om0;OmL=$OmL;Omb=$Omb;h_par=$h_par;ns=$ns;sig8=$sig8;boxsize=$boxsize;Npart=$Npart;z_in=$z_in;cosmo=$cosmology;softlen1=$softlen1;timestep=$tstep;outlston=$outlston;bary=$bary;ngenic=$ngenic;seed=$seed" > $dir_gad/$simnm/param_$rund.info
 #To generate parameter file for monofonIC
 echo "Om0=$Om0;OmL=$OmL;Omb=$Omb;h_par=$h_par;ns=$ns;sig8=$sig8;boxsize=$boxsize;Npart=$Npart;z_in=$z_in;cosmo=$cosmology;bary=$bary;seed=$seed" > $dir_mono/$simnm/param_$rund.info
 #To generate parameter file for MUSIC

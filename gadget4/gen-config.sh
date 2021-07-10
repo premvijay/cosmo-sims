@@ -1,6 +1,6 @@
 #!/bin/bash
 # grid=1024
-nmpil=2
+nmpil=1
 ncpus=32
 echo $2
 eval "$2"
