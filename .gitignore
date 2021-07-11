@@ -22,4 +22,7 @@ out_file1.txt
 *.bin
 *.noise
 *log.txt
+*.info
+param_r*.txt
+*Gadget4
 sanity_checks/plots/L150_N512_Cp18/old/*

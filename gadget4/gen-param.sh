@@ -38,7 +38,7 @@ OutputDir	 $dir_snap
 #RestartFile        restart
 SnapshotFileBase   snapshot
 
-OutputListFilename	 /mnt/home/student/cprem/cosmo-sims/gadget4/outputs.list
+OutputListFilename	 /mnt/home/student/cprem/cosmo-sims/gadget4/outputs-many.list
 
 % CPU time -limit
 
@@ -129,7 +129,7 @@ MinEgySpec 		50.0
 #PartAllocFactor       1.6
 #TreeAllocFactor       0.8
 #BufferSize            250          % in MByte
-MaxMemSize             5000
+MaxMemSize             4000
 
 % System of units
 
@@ -161,18 +161,18 @@ SofteningClassOfPartType5    2
 
 #MinGasHsmlFractional 0.25" > $1
 
-# if [ "$bary" = "yes" ]
-# then
-# printf '%s\n' "%----- Star formation
-# MaxSfrTimescale     1.5         % Gas consumption timescale (multi-phase model)
-# FactorSN            0.1         % beta, mass fraction of massive stars (multi-phase model)
-# FactorEVP           1000        % A_0, evaporation parameter (multi-phase model)
-# TempSupernova       1e+08       % T_SN, effective supernova temperature,sets feedback energy (multi-phase model)
-# TempClouds          1000        % temperature of cold clouds (multi-phase model)
-# CritOverDensity     57.7        % overdensity threshold value for cosological sims
-# CritPhysDensity     0           % critical physical density for star formation (in cm^(-3))
-# TreecoolFile        $dir_root/TREECOOL" >> $1
-# fi
+if [ "$bary" = "yes" ]
+then
+printf '%s\n' "%----- Star formation
+MaxSfrTimescale     1.5         % Gas consumption timescale (multi-phase model)
+FactorSN            0.1         % beta, mass fraction of massive stars (multi-phase model)
+FactorEVP           1000        % A_0, evaporation parameter (multi-phase model)
+TempSupernova       1e+08       % T_SN, effective supernova temperature,sets feedback energy (multi-phase model)
+TempClouds          1000        % temperature of cold clouds (multi-phase model)
+CritOverDensity     57.7        % overdensity threshold value for cosological sims
+CritPhysDensity     0           % critical physical density for star formation (in cm^(-3))
+TreecoolFile        $dir_root/TREECOOL" >> $1
+fi
 
 if [ "$ngenic" = "yes" ]
 then
