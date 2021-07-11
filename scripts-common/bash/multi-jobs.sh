@@ -32,9 +32,9 @@ if [ "$ngenic" = "yes" ]
 then
 jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund")
 else
-jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund")
-# jidics=$(qsub monofonic/comp_ics.pbs -v "simnm=$simnm,rund=$rund,seed=$seed")
-# jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund"  -W depend=afterok:${jidics%.*})
+# jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund")
+jidics=$(qsub monofonic/comp_ics.pbs -v "simnm=$simnm,rund=$rund,seed=$seed")
+jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund"  -W depend=afterok:${jidics%.*})
 fi
 
 
