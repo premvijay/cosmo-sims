@@ -13,12 +13,15 @@ dir_snap=$dir_sim_data/snaps/
 
 cd $dir_sim
 PBS_NTASKS=$(cat $PBS_NODEFILE | wc -l)
-mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 1 | tee -a out.log
+mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 0 | tee -a out.log
 echo $? | tee -a out.log
-# while [ ! -f "$file" ]
+file=$dir_snap/snapdir_095/snapshot_095.0.hdf5
 # while [ $? -ge 0 ]
-# do
-#   mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 1 | tee -a out.log
-# done
+while [ ! -f "$file" ]
+do
+  echo 're-running' | tee -a out.log
+  sleep 3
+  mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 1 | tee -a out.log
+done
 # until mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 1; do :; done
 hdf5_gadget4_to_2.sh "$dir_snap/snapdir_*/snapshot_*"
