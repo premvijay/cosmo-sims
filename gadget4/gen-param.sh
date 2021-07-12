@@ -38,7 +38,7 @@ OutputDir	 $dir_snap
 #RestartFile        restart
 SnapshotFileBase   snapshot
 
-OutputListFilename	 /mnt/home/student/cprem/cosmo-sims/gadget4/outputs-many.list
+OutputListFilename	 /mnt/home/student/cprem/cosmo-sims/gadget4/outputs-many-lin.list
 
 % CPU time -limit
 
@@ -78,7 +78,7 @@ TimeBetSnapshot		1.08379838673
 TimeOfFirstSnapshot	0.2
 
 
-CpuTimeBetRestartFile     900.0    % here in seconds
+CpuTimeBetRestartFile     300.0    % here in seconds
 TimeBetStatistics         0.02
 
 NumFilesPerSnapshot		 8
