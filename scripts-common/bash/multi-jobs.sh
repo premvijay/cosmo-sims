@@ -5,7 +5,7 @@ Npart=${2:-512}
 cosmology=${3:-p18}
 export simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${rund:-r1} seed=${seed-8899}
 export softlen1=${softlen1:-0.0065} timestep=${tstep:-0.01} z_in=${z_in:-24}
-export bary=${bary:-no} ngenic=${ngenic:-no} outlston=${outlston:-0}
+export bary=${bary:-no} ngenic=${ngenic:-no} outlston=${outlston:-0} swift=${swift:-no}
 compgad=${compgad:-1}
 
 
@@ -33,8 +33,13 @@ then
 jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund")
 else
 # jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund")
-jidics=$(qsub monofonic/comp_ics.pbs -v "simnm=$simnm,rund=$rund,seed=$seed")
-jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund"  -W depend=afterok:${jidics%.*})
+jidics=$(qsub monofonic/comp_ics1.pbs -v "simnm=$simnm,rund=$rund,seed=$seed")
+    if [ "$swift" = "yes" ]
+    then
+    jidsw=$(qsub swift/runsim.pbs -v "simnm=$simnm,rund=$rund"  -W depend=afterok:${jidics%.*})
+    else
+    jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund"  -W depend=afterok:${jidics%.*})
+    fi
 fi
 
 

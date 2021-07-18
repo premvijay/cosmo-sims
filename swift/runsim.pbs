@@ -1,27 +1,27 @@
 #!/bin/bash
 #PBS -l walltime=50:00:00
-#PBS -l select=16:ncpus=32:mpiprocs=32:mem=350GB
-#PBS -N job-gadget4
+#PBS -l select=16:ncpus=32:mpiprocs=1:mem=350GB
+#PBS -N job-swiftsim
 export simnm=${simnm:-L200_N256_Cp18} rund=${rund:-r1}
-dir_root=$HOME/cosmo-sims/gadget4/
+dir_root=$HOME/cosmo-sims/swift/
 dir_sim=$dir_root/$simnm/
 mkdir -p $dir_sim
 # $dir_root/compile.sh
 $dir_root/write-param.sh
 dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
-dir_snap=$dir_sim_data/snaps/
+dir_snap=$dir_sim_data/snaps_sw/
 
-cd $dir_sim
+cd $dir_snap
 PBS_NTASKS=$(cat $PBS_NODEFILE | wc -l)
-mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 0 | tee -a out.log
+mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE swift_mpi --cosmology --self-gravity --threads=32 $dir_sim/param_$rund.yml |& tee -a out.log
 echo $? | tee -a out.log
-file=$dir_snap/snapdir_095/snapshot_095.0.hdf5
+# file=$dir_snap/snapdir_095/snapshot_095.0.hdf5
 # while [ $? -ge 0 ]
-while [ ! -f "$file" ]
-do
-  echo 're-running' | tee -a out.log
-  sleep 3
-  mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 1 | tee -a out.log
-done
+# while [ ! -f "$file" ]
+# do
+#   echo 're-running' | tee -a out.log
+#   sleep 3
+#   mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 1 | tee -a out.log
+# done
 # until mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 1; do :; done
-hdf5_gadget4_to_2.sh "$dir_snap/snapdir_*/snapshot_*"
+# hdf5_gadget4_to_2.sh "$dir_snap/snapdir_*/snapshot_*"
