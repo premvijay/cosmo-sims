@@ -78,7 +78,7 @@ TimeBetSnapshot		1.08379838673
 TimeOfFirstSnapshot	0.2
 
 
-CpuTimeBetRestartFile     300.0    % here in seconds
+CpuTimeBetRestartFile     1000.0    % here in seconds
 TimeBetStatistics         0.02
 
 NumFilesPerSnapshot		 8
