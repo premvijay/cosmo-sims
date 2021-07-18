@@ -26,8 +26,6 @@ if ((compgad)); then gadget4/compile.sh; fi
 # export rund=${runds[i]} seed=${seeds[i]};
 # create-siminfo.sh $boxsize $Npart $cosmology $rund $z_in
 
-# jidics=$(qsub monofonic/comp_ics.pbs -v "simnm=$simnm,rund=$rund,seed=$seed")
-
 if [ "$ngenic" = "yes" ]
 then
 jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund")
