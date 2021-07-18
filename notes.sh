@@ -22,3 +22,14 @@ rund=r41 z_in=49 bary=yes softlen1=0.02 tstep=0.02 outlston=1 seed=111111 compga
 # However changing from 2 to 3 affect only Mvir (hmf shifts up for 2)
 # On the other hand decreasing ncellfac tilts the hmf to be lower at high masses.
 # reference frame origin either centre of mass or particle with minimum potential.
+
+
+
+CC=icc CXX=icpc FC=ifort ./configure --prefix=$PWD/installed/ --with-hdf5=$hdf5_home/bin/h5pcc --with-gsl=$gsl_home --with-fftw=$fftw3_home --with-metis=$metis_home --with-velociraptor=/mnt/home/student/cprem/tools/VELOCIraptor-STF/build_swifti/src/
+
+CC=icc CXX=icpc FC=ifort ./configure --prefix=$PWD/installed/ --with-hdf5=$hdf5_home/bin/h5pcc --with-gsl=$gsl_home --with-fftw=$fftw3_home --with-metis=$metis_home --with-velociraptor=/mnt/home/student/cprem/tools/VELOCIraptor-STF/build_swifti/src/ --enable-shared=fftw --with-mpi=$MPICOMPILER
+
+make config cc=icc cxx=icpc prefix=/mnt/home/student/cprem/libraries/metis/5.1.0
+make config cc=icc cxx=icpc prefix=/mnt/home/student/cprem/libraries/parmetis/4.0.3/
+
+FFTW3_ROOT=$fftw3_home HDF5_ROOT=$hdf5_home GSL_ROOT_DIR=$gsl_home CC=icc CXX=icpc FC=ifort cmake ../ -DVR_USE_HYDRO=ON -DVR_USE_SWIFT_INTERFACE=ON -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE=Release
