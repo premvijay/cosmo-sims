@@ -1,0 +1,5 @@
+#!/bin/bash
+#PBS -l walltime=50:00:00
+#PBS -l select=8:ncpus=32:mpiprocs=1:mem=370GB
+#PBS -N job-monofonic
+echo "use existing ics"
