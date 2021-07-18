@@ -1,5 +1,5 @@
-InitCondFile                                      /scratch/cprem/sims/L100_N256_Cp18/r42//ics//monofonic_49
-OutputDir                                         /scratch/cprem/sims/L100_N256_Cp18/r42//snaps/
+InitCondFile                                      /scratch/cprem/sims/L100_N256_Cp18/r2//ics//monofonic_24
+OutputDir                                         /scratch/cprem/sims/L100_N256_Cp18/r2//snaps/
 SnapshotFileBase                                  snapshot
 OutputListFilename                                /mnt/home/student/cprem/cosmo-sims/gadget4/outputs-many-lin.list
 TimeLimitCPU                                      691200
@@ -7,7 +7,7 @@ ICFormat                                          3
 SnapFormat                                        3
 ComovingIntegrationOn                             1
 OutputListOn                                      1
-TimeBegin                                         0.02
+TimeBegin                                         0.04
 TimeMax                                           1
 Omega0                                            0.306337
 OmegaLambda                                       0.693662
@@ -53,14 +53,3 @@ SofteningClassOfPartType2                         2
 SofteningClassOfPartType3                         2
 SofteningClassOfPartType4                         2
 SofteningClassOfPartType5                         2
-NSample                                           256
-GridSize                                          256
-Seed                                              222222
-SphereMode                                        0
-PowerSpectrumType                                 1
-ReNormalizeInputSpectrum                          1
-PrimordialIndex                                   0.9677
-ShapeGamma                                        0.21
-Sigma8                                            0.815
-PowerSpectrumFile                                 powerspec
-InputSpectrum_UnitLength_in_cm                    3.08568e+24
