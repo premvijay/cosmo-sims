@@ -67,13 +67,13 @@ rundir_str = rundir.replace('/', '_') + '-' + rundirs[-1].split('/')[-1] if len(
 plotsdir = os.path.join(args.plots_into, f'{args.simname:s}', f'matter_pk')
 os.makedirs(plotsdir, exist_ok=True)
 
-snapdir = os.path.join(args.simdir, args.simname, rundir, 'snaps')
+snapdir = os.path.join(args.simdir, args.simname, rundir, 'snaps_sw')
 
 def snapfilen_prefix(snapdirectory, snap_i):
-    if os.path.exists(os.path.join(snapdir, f'snapdir_{snap_i:03d}')):
-        return os.path.join(snapdir, 'snapdir_{0:03d}/snapshot_{0:03d}'.format(snap_i))
+    if os.path.exists(os.path.join(snapdir, f'snapdir')):
+        return os.path.join(snapdir, 'snapdir/snapshot_{0:04d}'.format(snap_i))
     else:
-        return os.path.join(snapdir, 'snapshot_{0:03d}'.format(snap_i))
+        return os.path.join(snapdir, 'snapshot_{0:04d}'.format(snap_i))
 
 def snapfilen(snapdirectory, snap_i):
     snapfilen_prefix_i = snapfilen_prefix(snapdirectory, snap_i)
@@ -128,15 +128,15 @@ def darker(color): return adjust_lightness(color, 0.7)
 i_list = [int(x) for x in args.snap_i_list.split(',')]
 i_list.sort()
 
-snap = Snapshot(snapfilen(snapdir, 0))
+snap = Snapshot(snapfilen(snapdir, 0), snapfrmt='swift')
 
 box_size = snap.box_size
-k_nyq = np.pi * grid_size / snap.box_size
-k_start = 2* np.pi / snap.box_size
+k_nyq = np.pi * grid_size / box_size
+k_start = 2* np.pi / box_size
 
 redshifts=[]
 for i in i_list:
-    snap = Snapshot(snapfilen(snapdir, i))
+    snap = Snapshot(snapfilen(snapdir, i), snapfrmt='swift')
     redshifts.append(snap.redshift)
 
 
@@ -201,8 +201,8 @@ for index, i in enumerate(i_list[::-1]):
     power_spec_all = None
 
     for rundir in rundirs:
-        snapdir = os.path.join(args.simdir, args.simname, rundir, 'snaps')
-        snap = Snapshot(snapfilen(snapdir, i))
+        snapdir = os.path.join(args.simdir, args.simname, rundir, 'snaps_sw')
+        snap = Snapshot(snapfilen(snapdir, i), snapfrmt='swift')
         savesdir = os.path.join(args.simdir, args.simname, rundir)
         print(savesdir)
         dens_griddir = os.path.join(savesdir,'meshgrid')
@@ -226,28 +226,28 @@ for index, i in enumerate(i_list[::-1]):
         h5file.close()
 
         power_spec_this_grp = pd.read_csv(pk_filepath, sep='\t', dtype='float64', names=['k', 'Pk'], header=0)
-        power_spec_folding_this = pd.read_csv(os.path.join(snapdir,f"powerspecs/powerspec_{i:03d}.txt"), sep='\s+', usecols=[0,1], names=['k', 'Delk'], skiprows=5)
+        # power_spec_folding_this = pd.read_csv(os.path.join(snapdir,f"powerspecs/powerspec_{i:03d}.txt"), sep='\s+', usecols=[0,1], names=['k', 'Delk'], skiprows=5)
 
         if power_spec_all is None:
             power_spec_all = power_spec_this_grp.copy()
-            power_spec_folding_all = power_spec_folding_this.copy()
+            # power_spec_folding_all = power_spec_folding_this.copy()
         else:
             power_spec_all.append( power_spec_this_grp )
-            power_spec_folding_all.append( power_spec_folding_this )
+            # power_spec_folding_all.append( power_spec_folding_this )
 
         # print(power_spec_folding_this)
 
     power_spec_grp1 = power_spec_all.groupby(pd.cut(power_spec_all['k'], bins=merge_bin)).mean()
 
-    power_spec_folding_all.sort_values('k', inplace=True)
-    power_spec_folding = power_spec_folding_all[power_spec_folding_all['k'].between(1e-3,1e2)]
-    power_spec_folding_grp1 = power_spec_folding.groupby(pd.cut(power_spec_folding['k'], bins=merge_bin)).mean()
-    power_spec_folding_grp1['pk'] = power_spec_folding_grp1['Delk']*power_spec_folding_grp1['k']**-3*2*np.pi**2
+    # power_spec_folding_all.sort_values('k', inplace=True)
+    # power_spec_folding = power_spec_folding_all[power_spec_folding_all['k'].between(1e-3,1e2)]
+    # power_spec_folding_grp1 = power_spec_folding.groupby(pd.cut(power_spec_folding['k'], bins=merge_bin)).mean()
+    # power_spec_folding_grp1['pk'] = power_spec_folding_grp1['Delk']*power_spec_folding_grp1['k']**-3*2*np.pi**2
 
     ax2.plot(power_spec_grp1['k'],power_spec_grp1['Pk'], color=color, linestyle='dashed', label=f"z={f'{round(snap.redshift,1):f}'.rstrip('0').rstrip('.'):s}")[0]
     ax2.scatter(power_spec_grp1['k'],power_spec_grp1['Pk'], color=color, s=4)
 
-    power_spec_folding_grp1.plot('k', 'pk', loglog=True, color=lighter(color), linestyle='dashdot', lw=0.8, ax=ax2, label='', legend=False)
+    # power_spec_folding_grp1.plot('k', 'pk', loglog=True, color=lighter(color), linestyle='dashdot', lw=0.8, ax=ax2, label='', legend=False)
 
 ax2.plot([],[], ' ', label=f"GADGET-4 simulation")
 ax2.plot([],[], linestyle='dashed', color='gray', label=f"  {scheme}-{grid_size:d} grid")
