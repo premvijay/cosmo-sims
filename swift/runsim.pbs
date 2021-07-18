@@ -12,6 +12,7 @@ dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
 dir_snap=$dir_sim_data/snaps_sw/
 
 cd $dir_snap
+module load hdf5_p/1.10.7
 PBS_NTASKS=$(cat $PBS_NODEFILE | wc -l)
 mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE swift_mpi --cosmology --self-gravity --threads=32 $dir_sim/param_$rund.yml |& tee -a out.log
 echo $? | tee -a out.log
