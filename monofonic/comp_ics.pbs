@@ -9,6 +9,7 @@ dir_mono=$HOME/cosmo-sims/monofonic/
 dir_sim=$dir_mono/$simnm/
 mkdir -p $dir_sim
 cd $dir_sim
+eval `cat $dir_sim/param_$rund.info`
 
 dir_sim_data=/scratch/cprem/sims/$simnm/$rund/
 dir_ics=$dir_sim_data/ics/
@@ -19,10 +20,13 @@ $dir_mono/write-param.sh
 module load intel-2019.5
 echo $dir_sim/param_$rund.txt
 cd $dir_sim
-# module load hdf5_p/1.10.7
+module load hdf5/1.10.7
 export OMP_NUM_THREADS=32
 mpirun -np 8 -machinefile $PBS_NODEFILE monofonIC $dir_sim/param_$rund.txt
 
 cd $dir_ics
 shopt -s extglob
 for f in !(*.hdf5); do mv "$f" "$f.hdf5"; done
+conda activate conforg 
+python /mnt/home/student/cprem/tools/swiftsim-git/tools/combine_ics.py $dir_ics/monofonic_${z_in}.0.hdf5 $dir_ics/monofonic_${z_in}_combined.hdf5
+# rm $dir_ics/monofonic_${z_in}.*.hdf5
