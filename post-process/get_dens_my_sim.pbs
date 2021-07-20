@@ -9,5 +9,5 @@ cd $PBS_O_WORKDIR
 source ~/.bashrc
 conda activate conforg
 echo Hello > hello.txt
-parallel  -j 16 --joblog "${PBS_JOBNAME}.p${PBS_JOBID%.*}" "cd $PBS_O_WORKDIR; source ~/.bashrc; conda activate conforg; python ./assign_density.py --simname {2} --rundir {4} --snap_i {3} --scheme {1} --grid_size 512 --interlace --simdir /scratch/cprem/sims/ --Pk --interlace | tee -a out_file1.txt" ::: TSC ::: L100_N512_Cp18 ::: {0..8} ::: r1
+parallel  -j 16 --joblog "${PBS_JOBNAME}.p${PBS_JOBID%.*}" "cd $PBS_O_WORKDIR; source ~/.bashrc; conda activate conforg; python ./assign_density.py --simname {2} --rundir {4} --snap_i {3} --scheme {1} --grid_size 512 --interlace --simdir /scratch/cprem/sims/ --Pk --interlace | tee -a out_file1.txt" ::: TSC ::: L100_N256_Cp18 ::: {6..11} ::: r4
 ### parallelCIC --sshloginfile $PBS_NODEFILE

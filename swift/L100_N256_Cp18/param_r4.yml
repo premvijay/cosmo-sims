@@ -1,7 +1,7 @@
 #
 # Define some meta-data about the simulation
 MetaData:
-  run_name:   r4  # The name of the simulation. This is written into the snapshot headers.
+  run_name:   L100_N256_Cp18_r4  # The name of the simulation. This is written into the snapshot headers.
 
 # Define the system of units to use internally. 
 InternalUnitSystem:
@@ -23,14 +23,14 @@ Cosmology:
 # Parameters for the self-gravity scheme
 Gravity:
   mesh_side_length:              256       # Number of cells along each axis for the periodic gravity mesh.
-  eta:                           0.05     # Constant dimensionless multiplier for time integration.
-  MAC:                           adaptive  # Choice of mulitpole acceptance criterion: 'adaptive' OR 'geometric'.
-  epsilon_fmm:                   0.001     # Tolerance parameter for the adaptive multipole acceptance criterion.
+  eta:                           0.025     # Constant dimensionless multiplier for time integration.
+  MAC:                           geometric  # Choice of mulitpole acceptance criterion: 'adaptive' OR 'geometric'.
+  # epsilon_fmm:                   0.001     # Tolerance parameter for the adaptive multipole acceptance criterion.
   theta_cr:                      0.7       # Opening angle for the purely gemoetric criterion.
-  comoving_DM_softening:         4.55047571155e+22 # Comoving Plummer-equivalent softening length for DM particles (in internal units).
-  max_physical_DM_softening:     4.55047571155e+22    # Maximal Plummer-equivalent softening length in physical coordinates for DM particles (in internal units).
-  comoving_baryon_softening:     4.55047571155e+22 # Comoving Plummer-equivalent softening length for baryon particles (in internal units).
-  max_physical_baryon_softening: 4.55047571155e+22    # Maximal Plummer-equivalent softening length in physical coordinates for baryon particles (in internal units).
+  comoving_DM_softening:         0.0130208333333 # Comoving Plummer-equivalent softening length for DM particles (in internal units).
+  max_physical_DM_softening:     0.0130208333333    # Maximal Plummer-equivalent softening length in physical coordinates for DM particles (in internal units).
+  comoving_baryon_softening:     0.0130208333333 # Comoving Plummer-equivalent softening length for baryon particles (in internal units).
+  max_physical_baryon_softening: 0.0130208333333    # Maximal Plummer-equivalent softening length in physical coordinates for baryon particles (in internal units).
   #softening_ratio_background:    0.04      # Fraction of the mean inter-particle separation to use as Plummer-equivalent softening for the background DM particles.
 
 # Parameters governing the time integration (Set dt_min and dt_max to the same value for a fixed time-step run.)

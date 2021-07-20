@@ -21,6 +21,8 @@ dir_ics=$dir_sim_data/ics/
 
 mkdir -p $dir_snap
 
+# conda activate conforg
+
 # a_in=$(printf %.5f `echo "1/($z_in+1)" | bc -l`)
 a_in=$(python -c "print (1.0/(1+$z_in))")
 # $(echo "scale 4;3*2.5" |bc)
@@ -28,13 +30,15 @@ Ocdm=$(python -c "print ($Om0-$Omb)")
 hMsun10=$(python -c "print (1.98848e43/$h_par)")
 hMpc=$(python -c "print (3.08567758e24/$h_par)")
 
-softlen=$(python -c "print($softlen1*$hMpc)")
+softlen=$(python -c "print(float($boxsize)/$Npart/30)")
 # softlen2=$softlen1
+
+# conda deactivate
 
 printf '%s\n' "#
 # Define some meta-data about the simulation
 MetaData:
-  run_name:   $simnm_$rund  # The name of the simulation. This is written into the snapshot headers.
+  run_name:   ${simnm}_$rund  # The name of the simulation. This is written into the snapshot headers.
 
 # Define the system of units to use internally. 
 InternalUnitSystem:
@@ -56,9 +60,9 @@ Cosmology:
 # Parameters for the self-gravity scheme
 Gravity:
   mesh_side_length:              $Npart       # Number of cells along each axis for the periodic gravity mesh.
-  eta:                           0.05     # Constant dimensionless multiplier for time integration.
-  MAC:                           adaptive  # Choice of mulitpole acceptance criterion: 'adaptive' OR 'geometric'.
-  epsilon_fmm:                   0.001     # Tolerance parameter for the adaptive multipole acceptance criterion.
+  eta:                           0.025     # Constant dimensionless multiplier for time integration.
+  MAC:                           geometric  # Choice of mulitpole acceptance criterion: 'adaptive' OR 'geometric'.
+  # epsilon_fmm:                   0.001     # Tolerance parameter for the adaptive multipole acceptance criterion.
   theta_cr:                      0.7       # Opening angle for the purely gemoetric criterion.
   comoving_DM_softening:         $softlen # Comoving Plummer-equivalent softening length for DM particles (in internal units).
   max_physical_DM_softening:     $softlen    # Maximal Plummer-equivalent softening length in physical coordinates for DM particles (in internal units).
