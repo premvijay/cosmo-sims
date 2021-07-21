@@ -11,8 +11,8 @@
 echo $2
 eval "$2"
 
-softlen0=$softlen1
-softlen2=$softlen1
+# softlen0=$softlen1
+# softlen2=$softlen1
 
 dir_root=$HOME/cosmo-sims/gadget4/
 dir_sim=$dir_root/$simnm/
@@ -24,6 +24,7 @@ mkdir -p $dir_snap
 
 # a_in=$(printf %.5f `echo "1/($z_in+1)" | bc -l`)
 a_in=$(python -c "print (1.0/(1+$z_in))")
+softlen=$(python -c "print(float($boxsize)/$Npart/30)")
 
 printf '%s\n' "%  Relevant files
 
@@ -140,14 +141,14 @@ GravityConstantInternal  0
  
 
 %---- Gravitational softening length
-SofteningComovingClass0      $softlen0           ;
-SofteningMaxPhysClass0       $softlen0 
+SofteningComovingClass0      $softlen           ;
+SofteningMaxPhysClass0       $softlen 
 
-SofteningComovingClass1      $softlen1           ;
-SofteningMaxPhysClass1       $softlen1 
+SofteningComovingClass1      $softlen           ;
+SofteningMaxPhysClass1       $softlen 
 
-SofteningComovingClass2      $softlen2         ;
-SofteningMaxPhysClass2       $softlen2
+SofteningComovingClass2      $softlen           ;
+SofteningMaxPhysClass2       $softlen
 
 
 
