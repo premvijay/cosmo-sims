@@ -3,10 +3,10 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
-import matplotlib.animation
+# import matplotlib.animation
 import pandas as pd
 import argparse
-import pdb
+# import pdb
 from munch import Munch
 import tables
 
@@ -15,8 +15,10 @@ from camb import model, initialpower
 
 from gadget_tools import Snapshot
 from field_tools import compute_power_spec
-from fitting_fns import halofit
+# from fitting_fns import halofit
+from time import time
 
+t_now = time()
 
 parser = argparse.ArgumentParser(
     description='Density field evolution from Gadget simulation.',
@@ -54,6 +56,8 @@ else:
     # plt.set_cmap('nipy_spectral')
 
 # simname = 'bdm_cdm1024' if args.simname is None else args.simname
+t_bef, t_now = t_now, time()
+print(t_now - t_bef)
 
 schemes = ['NGP', 'CIC', 'TSC']
 p = schemes.index(scheme) + 1
@@ -83,6 +87,8 @@ def snapfilen(snapdirectory, snap_i):
         return snapfilen_prefix_i + '.0'
 
 
+t_bef, t_now = t_now, time()
+print(t_now - t_bef)
 
 # cosmology = 'P18' if args.simname=='bdm_cdm1024' else 'WMAP7'
 if args.cosmo =='P18':
@@ -128,6 +134,9 @@ def darker(color): return adjust_lightness(color, 0.7)
 i_list = [int(x) for x in args.snap_i_list.split(',')]
 i_list.sort()
 
+t_bef, t_now = t_now, time()
+print(t_now - t_bef)
+
 snap = Snapshot(snapfilen(snapdir, 0), snapfrmt='swift')
 
 box_size = snap.box_size
@@ -136,9 +145,12 @@ k_start = 2* np.pi / box_size
 
 redshifts=[]
 for i in i_list:
-    snap = Snapshot(snapfilen(snapdir, i), snapfrmt='swift')
+    snap = Snapshot(snapfilen(snapdir, i), snapfrmt='swift' if i!=24 else 'eagle')
     redshifts.append(snap.redshift)
 
+
+t_bef, t_now = t_now, time()
+print(t_now - t_bef)
 
 pars_camb = camb.CAMBparams()
 pars_camb.set_cosmology(H0=cos_pars.h*100, ombh2=cos_pars.Ombh2, omch2=cos_pars.Omch2)
@@ -150,15 +162,19 @@ pars_camb.set_matter_power(redshifts=redshifts, kmax=10*k_nyq)
 pars_camb.NonLinear = model.NonLinear_none
 pars_camb.NonLinearModel.set_params(halofit_version='takahashi')
 results_camb = camb.get_results(pars_camb)
-kh_camb, z_camb, pk_camb = results_camb.get_matter_power_spectrum(minkh=2e-7, maxkh=100, npoints = 5000)
+kh_camb, z_camb, pk_camb = results_camb.get_matter_power_spectrum(minkh=2e-7, maxkh=100, npoints = 1000)
 # s8 = np.array(results.get_sigma8())
+
+t_bef, t_now = t_now, time()
+print(t_now - t_bef)
 
 #Non-Linear spectra (Halofit)
 pars_camb.NonLinear = model.NonLinear_both
 results_camb.calc_power_spectra(pars_camb)
 kh_camb_nonlin, z_camb_nonlin, pk_camb_nonlin = results_camb.get_matter_power_spectrum(minkh=k_start*0.8, maxkh=1.2*k_nyq, npoints = 200)
 
-
+t_bef, t_now = t_now, time()
+print(t_now - t_bef)
 
 
 fig1, ax2 = plt.subplots(1, figsize=(7.5,7), dpi=150)
@@ -167,6 +183,8 @@ plt.rcParams['lines.linewidth'] = 1
 # ax2.plot([],[], ' ', label=f"Scheme-{scheme}, Grid-size: {grid_size:d}")
 
 for index, i in enumerate(i_list[::-1]):
+    t_bef, t_now = t_now, time()
+    print(t_now - t_bef)
     color=next(ax2._get_lines.prop_cycler)['color']
 
     k_full = kh_camb
@@ -180,10 +198,10 @@ for index, i in enumerate(i_list[::-1]):
 
     ax2.plot(kh_camb_nonlin, pk_camb_nonlin[index], linestyle='solid', color=darker(color), zorder=1)
 
-    pk_fit = halofit.NonLinPowerSpecCDM(Omega(snap.redshift, snap.Omega_m_0))
-    pk_fit.set_Del2L_interpolate(k_full, pk_lin)
-    pk_fit.compute_params(param_from='smith')
-    print(vars(pk_fit))
+    # pk_fit = halofit.NonLinPowerSpecCDM(Omega(snap.redshift, snap.Omega_m_0))
+    # pk_fit.set_Del2L_interpolate(k_full, pk_lin)
+    # pk_fit.compute_params(param_from='smith')
+    # print(vars(pk_fit))
     # ax2.plot(kh_camb_nonlin, pk_fit.P(kh_camb_nonlin), linestyle='solid', color=darker(color), zorder=2)
 
     lin_bin = np.linspace(np.sqrt(k_start*k_nyq),k_nyq, 30)
@@ -202,7 +220,7 @@ for index, i in enumerate(i_list[::-1]):
 
     for rundir in rundirs:
         snapdir = os.path.join(args.simdir, args.simname, rundir, 'snaps_sw')
-        snap = Snapshot(snapfilen(snapdir, i), snapfrmt='swift')
+        snap = Snapshot(snapfilen(snapdir, i), snapfrmt='swift' if i!=24 else 'eagle')
         savesdir = os.path.join(args.simdir, args.simname, rundir)
         print(savesdir)
         dens_griddir = os.path.join(savesdir,'meshgrid')
