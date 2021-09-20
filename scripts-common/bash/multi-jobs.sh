@@ -5,7 +5,7 @@ Npart=${2:-512}
 cosmology=${3:-p18}
 export simnm="L${boxsize}_N${Npart}_C${cosmology}" rund=${rund:-r1} seed=${seed-8899}
 export softlen1=${softlen1:-0.0065} timestep=${tstep:-0.01} z_in=${z_in:-24}
-export bary=${bary:-no} ngenic=${ngenic:-no} outlston=${outlston:-0} swift=${swift:-no}
+export bary=${bary:-no} ngenic=${ngenic:-no} outlston=${outlston:-0} swift=${swift:-no} fofsub=${fofsub:-yes}
 compgad=${compgad:-1}
 
 

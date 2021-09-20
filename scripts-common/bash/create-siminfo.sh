@@ -37,7 +37,7 @@ mkdir -p $dir_gad/$simnm/$rund
 mkdir -p $dir_sw/$simnm/$rund
 
 #GADGET configuration info
-echo "grid=$((2*Npart));nmpil=1;ncpus=32;bary=$bary;ngenic=$ngenic" > $dir_gad/$simnm/$rund/compile.info
+echo "grid=$((2*Npart));nmpil=1;ncpus=32;bary=$bary;ngenic=$ngenic;fofsub=$fofsub" > $dir_gad/$simnm/$rund/compile.info
 
 case $cosmology in
   p18)

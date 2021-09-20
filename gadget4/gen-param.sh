@@ -160,7 +160,10 @@ SofteningClassOfPartType4    2
 SofteningClassOfPartType5    2
 % Softening lengths
 
-#MinGasHsmlFractional 0.25" > $1
+#MinGasHsmlFractional 0.25
+
+
+DesLinkNgb 20\n" > $1
 
 if [ "$bary" = "yes" ]
 then
