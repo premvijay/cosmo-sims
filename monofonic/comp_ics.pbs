@@ -28,6 +28,6 @@ cd $dir_ics
 shopt -s extglob
 for f in !(*.hdf5); do mv "$f" "$f.hdf5"; done
 #cp $dir_ics/monofonic_${z_in}.*hdf5 $dir_ics/monofonic_${z_in}_combined.hdf5
-conda activate conforg 
-python /mnt/home/student/cprem/tools/swiftsim-git/tools/combine_ics.py $dir_ics/monofonic_${z_in}.0.hdf5 $dir_ics/monofonic_${z_in}_combined.hdf5
+# conda activate conforg 
+# python /mnt/home/student/cprem/tools/swiftsim-git/tools/combine_ics.py $dir_ics/monofonic_${z_in}.0.hdf5 $dir_ics/monofonic_${z_in}_combined.hdf5
 # rm $dir_ics/monofonic_${z_in}.*.hdf5
