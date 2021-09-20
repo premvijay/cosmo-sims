@@ -130,7 +130,7 @@ MinEgySpec 		50.0
 #PartAllocFactor       1.6
 #TreeAllocFactor       0.8
 #BufferSize            250          % in MByte
-MaxMemSize             4000
+MaxMemSize             6000
 
 % System of units
 
