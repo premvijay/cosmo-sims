@@ -23,6 +23,7 @@ out_file1.txt
 *.noise
 *log.txt
 *.info
-param_r*.txt
+param_r*.txt*
+Config.sh
 *Gadget4
 sanity_checks/plots/L150_N512_Cp18/old/*
