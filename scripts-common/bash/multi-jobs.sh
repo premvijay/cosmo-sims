@@ -25,18 +25,20 @@ if ((compgad)); then gadget4/compile.sh; fi
 # do
 # export rund=${runds[i]} seed=${seeds[i]};
 # create-siminfo.sh $boxsize $Npart $cosmology $rund $z_in
-
+echo $simnm
 if [ "$ngenic" = "yes" ]
 then
-jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund")
+jidgad=$(qsub -v "simnm=$simnm,rund=$rund" gadget4/runsim.pbs)
 else
+echo using monofonIC qsub -v "simnm=$simnm,rund=$rund,seed=$seed" monofonic/comp_ics.pbs
 # jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund")
-jidics=$(qsub monofonic/comp_ics1.pbs -v "simnm=$simnm,rund=$rund,seed=$seed")
+jidics=$(qsub -v "simnm=$simnm,rund=$rund,seed=$seed" monofonic/comp_ics.pbs)
     if [ "$swift" = "yes" ]
     then
-    jidsw=$(qsub swift/runsim.pbs -v "simnm=$simnm,rund=$rund"  -W depend=afterok:${jidics%.*})
+    jidsw=$(qsub -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} swift/runsim.pbs)
     else
-    jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund"  -W depend=afterok:${jidics%.*})
+    echo using Gadget4 qsub -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} gadget4/runsim.pbs
+    jidgad=$(qsub -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} gadget4/runsim.pbs)
     fi
 fi
 
