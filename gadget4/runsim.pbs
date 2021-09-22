@@ -13,7 +13,7 @@ dir_snap=$dir_sim_data/snaps/
 
 cd $dir_sim
 PBS_NTASKS=$(cat $PBS_NODEFILE | wc -l)
-mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 0 |& tee -a out.log
+# mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 0 |& tee -a $dir_snap/out.log
 echo $? | tee -a out.log
 file=$dir_snap/snapdir_009/snapshot_009.0.hdf5
 
@@ -21,7 +21,11 @@ while [ ! -f "$file" ]
 do
   echo 're-running' | tee -a out.log
   sleep 3
-  mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 1 |& tee -a out.log
+  if [ ! -f $dir_snap/snapdir_000/snapshot_000.0.hdf5]
+  then
+    mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 0 |& tee -a $dir_snap/out.log
+  else
+    mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 1 |& tee -a $dir_snap/out.log
 done
 
 # until mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 1; do :; done
