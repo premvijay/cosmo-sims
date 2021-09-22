@@ -17,15 +17,18 @@ PBS_NTASKS=$(cat $PBS_NODEFILE | wc -l)
 echo $? | tee -a out.log
 file=$dir_snap/snapdir_009/snapshot_009.0.hdf5
 
-while [ ! -f "$file" ]
+while [ ! -f "$file" ];
 do
-  echo 're-running' | tee -a out.log
-  sleep 3
-  if [ ! -f $dir_snap/snapdir_000/snapshot_000.0.hdf5]
+  echo 're-running' | tee -a out.log;
+  sleep 3;
+  if [ ! -f "$dir_snap/snapdir_000/snapshot_000.0.hdf5" ];
   then
+    echo starting from scratch
     mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 0 |& tee -a $dir_snap/out.log
   else
+    echo restarting
     mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 1 |& tee -a $dir_snap/out.log
+  fi
 done
 
 # until mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 1; do :; done
