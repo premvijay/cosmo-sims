@@ -60,7 +60,7 @@ def snapfilen_prefix(snapdir, snap_i):
 
 filepath_prefix = snapfilen_prefix(snapdir, args.snap_i)
 
-filepath_prefix = os.path.join(snapdir_sw, 'snapdir/snapshot_{0:04d}'.format(args.snap_i))
+# filepath_prefix = os.path.join(snapdir_sw, 'snapdir/snapshot_{0:04d}'.format(args.snap_i))
 
 # filename_prefix = 'snapdir_{0:03d}/snapshot_{0:03d}'.format(args.snap_i)
 # filepath_prefix = os.path.join(snapdir, filename_prefix)
@@ -73,17 +73,17 @@ print('\n Particle positions read from all binaries in the snapshot')
 t_bef, t_now = t_now, time()
 print(t_now-t_bef)
 
-filepath = filepath_prefix #+ '.0'
+filepath = filepath_prefix + '.0'
 print(filepath)
-snap = Snapshot(filepath, snapfrmt='swift')
+snap = Snapshot(filepath, snapfrmt='gadget4')
 box_size = snap.box_size #[0] / (3.08567758e24/ snap.Hubble_param)
 
 # with h5py.File(filepath) as h5file:
 #     box_size = h5file['Cosmology'].attrs['Omega_m']
 #     posd = h5file['PartType1']['Coordinates'][:]
 
-posd = snap.positions(prtcl_type="Halo")
-#read_all_hdf5('Coordinates', 1, filepath)
+# posd = snap.positions(prtcl_type="Halo")
+posd = read_all_hdf5('Coordinates', 1, filepath_prefix)
 
 delta = assign_density(posd, box_size, args.grid_size, scheme=args.scheme)
 print('\n density assigned to main grid for snapshot {0:03d}'.format(args.snap_i))

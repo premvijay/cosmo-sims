@@ -71,13 +71,13 @@ rundir_str = rundir.replace('/', '_') + '-' + rundirs[-1].split('/')[-1] if len(
 plotsdir = os.path.join(args.plots_into, f'{args.simname:s}', f'matter_pk')
 os.makedirs(plotsdir, exist_ok=True)
 
-snapdir = os.path.join(args.simdir, args.simname, rundir, 'snaps_sw')
+snapdir = os.path.join(args.simdir, args.simname, rundir, 'snaps')
 
 def snapfilen_prefix(snapdirectory, snap_i):
-    if os.path.exists(os.path.join(snapdir, f'snapdir')):
-        return os.path.join(snapdir, 'snapdir/snapshot_{0:04d}'.format(snap_i))
+    if os.path.exists(os.path.join(snapdir, f'snapdir_{0:03d}')):
+        return os.path.join(snapdir, 'snapdir_{0:03d}/snapshot_{0:03d}'.format(snap_i))
     else:
-        return os.path.join(snapdir, 'snapshot_{0:04d}'.format(snap_i))
+        return os.path.join(snapdir, 'snapshot_{0:03d}'.format(snap_i))
 
 def snapfilen(snapdirectory, snap_i):
     snapfilen_prefix_i = snapfilen_prefix(snapdirectory, snap_i)
@@ -137,7 +137,7 @@ i_list.sort()
 t_bef, t_now = t_now, time()
 print(t_now - t_bef)
 
-snap = Snapshot(snapfilen(snapdir, 0), snapfrmt='swift')
+snap = Snapshot(snapfilen(snapdir, 0), snapfrmt='gadget4')
 
 box_size = snap.box_size
 k_nyq = np.pi * grid_size / box_size
@@ -145,7 +145,7 @@ k_start = 2* np.pi / box_size
 
 redshifts=[]
 for i in i_list:
-    snap = Snapshot(snapfilen(snapdir, i), snapfrmt='swift' if i!=24 else 'eagle')
+    snap = Snapshot(snapfilen(snapdir, i), snapfrmt='gadget4')
     redshifts.append(snap.redshift)
 
 
@@ -219,8 +219,8 @@ for index, i in enumerate(i_list[::-1]):
     power_spec_all = None
 
     for rundir in rundirs:
-        snapdir = os.path.join(args.simdir, args.simname, rundir, 'snaps_sw')
-        snap = Snapshot(snapfilen(snapdir, i), snapfrmt='swift' if i!=24 else 'eagle')
+        snapdir = os.path.join(args.simdir, args.simname, rundir, 'snaps')
+        snap = Snapshot(snapfilen(snapdir, i), snapfrmt='gadget4')
         savesdir = os.path.join(args.simdir, args.simname, rundir)
         print(savesdir)
         dens_griddir = os.path.join(savesdir,'meshgrid')
