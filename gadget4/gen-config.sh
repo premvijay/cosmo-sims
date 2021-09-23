@@ -19,8 +19,7 @@ MAX_NUMBER_OF_RANKS_WITH_SHARED_MEMORY=$ncpus    # default is 64, but can also b
 
 if [ "$fofsub" = "yes" ]
 then
-printf "FOF
-SUBFIND\n" >> $1
+printf "FOF\n" >> $1
 fi
 
 if [ "$bary" = "yes" ]

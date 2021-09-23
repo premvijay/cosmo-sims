@@ -79,7 +79,7 @@ TimeBetSnapshot		1.08379838673
 TimeOfFirstSnapshot	0.2
 
 
-CpuTimeBetRestartFile     1000.0    % here in seconds
+CpuTimeBetRestartFile     1800.0    % here in seconds
 TimeBetStatistics         0.02
 
 NumFilesPerSnapshot		 8
@@ -162,8 +162,7 @@ SofteningClassOfPartType5    2
 
 #MinGasHsmlFractional 0.25
 
-
-DesLinkNgb 20\n" > $1
+\n" > $1
 
 if [ "$bary" = "yes" ]
 then
