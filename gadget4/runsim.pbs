@@ -1,6 +1,6 @@
 #!/bin/bash
-#PBS -l walltime=150:00:00
-#PBS -l select=8:ncpus=32:mpiprocs=32:mem=350GB
+#PBS -l walltime=50:00:00
+#PBS -l select=16:ncpus=32:mpiprocs=32:mem=350GB
 #PBS -N job-gadget4
 export simnm=${simnm:-L200_N256_Cp18} rund=${rund:-r1}
 dir_root=$HOME/cosmo-sims/gadget4/
@@ -13,9 +13,9 @@ dir_snap=$dir_sim_data/snaps/
 
 cd $dir_sim
 PBS_NTASKS=$(cat $PBS_NODEFILE | wc -l)
-# mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 2 3 |& tee -a $dir_snap/out.log
+# mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 2 10 |& tee -a $dir_snap/out.log
 echo $? | tee -a out.log
-file=$dir_snap/snapdir_009/snapshot_009.0.hdf5
+file=$dir_snap/snapdir_0011/snapshot_011.0.hdf5
 
 while [ ! -f "$file" ];
 do
