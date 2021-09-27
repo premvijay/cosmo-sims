@@ -75,7 +75,10 @@ print(t_now-t_bef)
 
 filepath = filepath_prefix + '.0'
 print(filepath)
-snap = Snapshot(filepath, snapfrmt='gadget4')
+try:
+    snap = Snapshot(filepath, snapfrmt='gadget4')
+except:
+    quit()
 box_size = snap.box_size #[0] / (3.08567758e24/ snap.Hubble_param)
 
 # with h5py.File(filepath) as h5file:
