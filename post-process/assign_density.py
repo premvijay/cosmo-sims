@@ -102,15 +102,16 @@ print('\n Density assigned for snapshot {0:03d} by scheme {1:s}'.format(args.sna
 t_bef, t_now = t_now, time()
 print(t_now-t_bef)
 
+# FILTERS = tables.Filters(complib='zlib', complevel=5)
 
 dens_griddir = os.path.join(args.outdir, args.simname, args.rundir,'meshgrid')
 os.makedirs(dens_griddir, exist_ok=True)
-h5file = tables.open_file( os.path.join(dens_griddir, f'{args.scheme:s}_{args.grid_size:d}_{args.snap_i:03d}.hdf5'), 'w' )
-grp_1 = h5file.create_group(h5file.root, "PartType1", "Dark matter")
-h5file.create_array(grp_1, 'density', delta.astype(np.float32), 'Density assigned to grid dimensions')
+h5file = h5py.File( os.path.join(dens_griddir, f'{args.scheme:s}_{args.grid_size:d}_{args.snap_i:03d}.hdf5'), 'w')
+grp_1 = h5file.create_group("PartType1") #"Dark matter")
+grp_1.create_dataset('density', data=delta.astype(np.float32), compression='gzip') #'Density assigned to grid dimensions')
 
 if args.interlace:
-    h5file.create_array(grp_1, 'density_shifted', delta_shifted.astype(np.float32), 'Density assigned to shifted grid dimensions')
+    grp_1.create_dataset('density_shifted', data=delta_shifted.astype(np.float32), compression='gzip') #'Density assigned to shifted grid dimensions')
 
 h5file.close()
 
