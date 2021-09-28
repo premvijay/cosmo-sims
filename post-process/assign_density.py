@@ -111,12 +111,20 @@ dens_griddir = os.path.join(args.outdir, args.simname, args.rundir,'meshgrid')
 os.makedirs(dens_griddir, exist_ok=True)
 h5file = h5py.File( os.path.join(dens_griddir, f'{args.scheme:s}_{args.grid_size:d}_{args.snap_i:03d}.hdf5'), 'w')
 grp_1 = h5file.create_group("PartType1") #"Dark matter")
-grp_1.create_dataset('density', data=delta.astype(np.float32), compression='gzip') #'Density assigned to grid dimensions')
+grp_1.create_dataset('density', data=delta.astype(np.float32), compression=None) #'Density assigned to grid dimensions')
 
 if args.interlace:
-    grp_1.create_dataset('density_shifted', data=delta_shifted.astype(np.float32), compression='gzip') #'Density assigned to shifted grid dimensions')
+    grp_1.create_dataset('density_shifted', data=delta_shifted.astype(np.float32), compression=None) #'Density assigned to shifted grid dimensions')
 
 h5file.close()
+
+# delta_k = np.fft.rfftn(delta) * (box_size/delta.shape[0])**delta.ndim
+
+# h5file = h5py.File( os.path.join(dens_griddir, f'{args.scheme:s}_{args.grid_size:d}_{args.snap_i:03d}_k.hdf5'), 'w')
+# grp_1 = h5file.create_group("PartType1") #"Dark matter")
+# grp_1.create_dataset('density', data=delta.astype(np.float32), compression='gzip') #'Density assigned to grid dimensions')
+
+# h5file.close()
 
 if args.slice2D:
     # mmhpos = (48.25266, 166.29897, 98.36325) #bdm_cdm

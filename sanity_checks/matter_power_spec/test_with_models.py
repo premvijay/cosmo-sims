@@ -181,10 +181,12 @@ fig1, ax2 = plt.subplots(1, figsize=(7.5,7), dpi=150)
 plt.rcParams['lines.linewidth'] = 1
 
 # ax2.plot([],[], ' ', label=f"Scheme-{scheme}, Grid-size: {grid_size:d}")
+t_bef, t_now = t_now, time()
+print(t_now - t_bef)
 
 for index, i in enumerate(i_list[::-1]):
-    t_bef, t_now = t_now, time()
-    print(t_now - t_bef)
+    # t_bef, t_now = t_now, time()
+    # print(t_now - t_bef)
     color=next(ax2._get_lines.prop_cycler)['color']
 
     k_full = kh_camb
@@ -266,6 +268,8 @@ for index, i in enumerate(i_list[::-1]):
     ax2.scatter(power_spec_grp1['k'],power_spec_grp1['Pk'], color=color, s=4)
 
     # power_spec_folding_grp1.plot('k', 'pk', loglog=True, color=lighter(color), linestyle='dashdot', lw=0.8, ax=ax2, label='', legend=False)
+    t_bef, t_now = t_now, time()
+    print(t_now - t_bef, f'redshift z={round(snap.redshift,1)} done')
 
 ax2.plot([],[], ' ', label=f"GADGET-4 simulation")
 ax2.plot([],[], linestyle='dashed', color='gray', label=f"  {scheme}-{grid_size:d} grid")
