@@ -8,6 +8,8 @@ export softlen1=${softlen1:-0.0065} timestep=${tstep:-0.01} z_in=${z_in:-24}
 export bary=${bary:-no} ngenic=${ngenic:-no} outlston=${outlston:-0} swift=${swift:-no} fofsub=${fofsub:-no}
 compgad=${compgad:-1}
 
+export nsel=${nsel:-8} ncpus=${ncpus:-32}
+
 
 if [ "$bary" = yes ]; then export simnm=${simnm}_bar; fi
 
@@ -17,6 +19,8 @@ cd $dir_root
 create-siminfo.sh $boxsize $Npart $cosmology
 
 if ((compgad)); then gadget4/compile.sh; fi
+
+cosmology=$cosmology camb/get-transfer-fn.sh
 
 # seeds=(4444 5555 6666 7777)
 # runds=(r4 r5 r6 r7)
@@ -28,17 +32,17 @@ if ((compgad)); then gadget4/compile.sh; fi
 echo $simnm
 if [ "$ngenic" = "yes" ]
 then
-jidgad=$(qsub -v "simnm=$simnm,rund=$rund" gadget4/runsim.pbs)
+jidgad=$(qsub -l select=2:ncpus=8:mpiprocs=1:mem=50GB -v "simnm=$simnm,rund=$rund" gadget4/runsim.pbs)
 else
-echo using monofonIC qsub -v "simnm=$simnm,rund=$rund,seed=$seed" monofonic/comp_ics.pbs
+echo using monofonIC qsub -N "job-m-$cosmology" -l select=$nsel:ncpus=$ncpus:mpiprocs=1:mem=10GB -v "simnm=$simnm,rund=$rund,seed=$seed" monofonic/comp_ics.pbs
 # jidgad=$(qsub gadget4/runsim.pbs -v "simnm=$simnm,rund=$rund")
-jidics=$(qsub -v "simnm=$simnm,rund=$rund,seed=$seed" monofonic/comp_ics.pbs)
+jidics=$(qsub -N "job-m-$cosmology" -l select=$nsel:ncpus=$ncpus:mpiprocs=1:mem=10GB -v "simnm=$simnm,rund=$rund,seed=$seed" monofonic/comp_ics.pbs)
     if [ "$swift" = "yes" ]
     then
     jidsw=$(qsub -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} swift/runsim.pbs)
     else
-    echo using Gadget4 qsub -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} gadget4/runsim.pbs
-    jidgad=$(qsub -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} gadget4/runsim.pbs)
+    echo using Gadget4 qsub -N "job-m-$cosmology" -l select=$nsel:ncpus=$ncpus:mpiprocs=$ncpus:mem=10GB -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} gadget4/runsim.pbs
+    jidgad=$(qsub -N "job-m-$cosmology" -l select=$nsel:ncpus=$ncpus:mpiprocs=$ncpus:mem=10GB -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} gadget4/runsim.pbs)
     fi
 fi
 

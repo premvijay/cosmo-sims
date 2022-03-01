@@ -37,7 +37,7 @@ mkdir -p $dir_gad/$simnm/$rund
 mkdir -p $dir_sw/$simnm/$rund
 
 #GADGET configuration info
-echo "grid=$((2*Npart));nmpil=1;ncpus=32;bary=$bary;ngenic=$ngenic;fofsub=$fofsub" > $dir_gad/$simnm/$rund/compile.info
+echo "grid=$((2*Npart));nmpil=1;ncpus=$ncpus;bary=$bary;ngenic=$ngenic;fofsub=$fofsub" > $dir_gad/$simnm/$rund/compile.info
 
 case $cosmology in
   p18)
@@ -50,6 +50,46 @@ case $cosmology in
   
   w7)
     Om0=0.276;OmL=0.724;Omb=0.045;h_par=0.7;ns=0.961;sig8=0.811
+    ;;
+
+  lh1)
+    Om0=0.3391 ;OmL=0.6609 ;Omb=0.05172 ;h_par=0.6682 ;ns=0.9931 ;sig8=0.8162
+    ;;
+
+  lh2)
+    Om0=0.3503 ;OmL=0.6497 ;Omb=0.0505 ;h_par=0.7522 ;ns=0.9703 ;sig8=0.7802
+    ;;
+
+  lh3)
+    Om0=0.3055 ;OmL=0.6945 ;Omb=0.04682 ;h_par=0.685 ;ns=0.9475 ;sig8=0.7562
+    ;;
+
+  lh4)
+    Om0=0.3167 ;OmL=0.6833 ;Omb=0.04988 ;h_par=0.7186 ;ns=0.9855 ;sig8=0.7682
+    ;;
+
+  lh5)
+    Om0=0.2607 ;OmL=0.7393 ;Omb=0.04805 ;h_par=0.601 ;ns=0.9323 ;sig8=0.8042
+    ;;
+
+  lh6)
+    Om0=0.3279 ;OmL=0.6721 ;Omb=0.04743 ;h_par=0.6178 ;ns=0.9399 ;sig8=0.8282
+    ;;
+
+  lh7)
+    Om0=0.2831 ;OmL=0.7169 ;Omb=0.04866 ;h_par=0.6346 ;ns=1.0007 ;sig8=0.8402
+    ;;
+
+  lh8)
+    Om0=0.3615 ;OmL=0.6385 ;Omb=0.04621 ;h_par=0.7354 ;ns=0.9627 ;sig8=0.8642
+    ;;
+
+  lh9)
+    Om0=0.2943 ;OmL=0.7057 ;Omb=0.05111 ;h_par=0.7018 ;ns=0.9551 ;sig8=0.7922
+    ;;
+
+  lh10)
+    Om0=0.2719 ;OmL=0.7281 ;Omb=0.04927 ;h_par=0.6514 ;ns=0.9779 ;sig8=0.8522
     ;;
 esac
 
