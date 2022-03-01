@@ -41,8 +41,8 @@ jidics=$(qsub -N "job-m-$cosmology" -l select=$nsel:ncpus=$ncpus:mpiprocs=1:mem=
     then
     jidsw=$(qsub -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} swift/runsim.pbs)
     else
-    echo using Gadget4 qsub -N "job-m-$cosmology" -l select=$nsel:ncpus=$ncpus:mpiprocs=$ncpus:mem=10GB -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} gadget4/runsim.pbs
-    jidgad=$(qsub -N "job-m-$cosmology" -l select=$nsel:ncpus=$ncpus:mpiprocs=$ncpus:mem=10GB -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} gadget4/runsim.pbs)
+    echo using Gadget4 qsub -N "job-g-$cosmology" -l select=$nsel:ncpus=$ncpus:mpiprocs=$ncpus:mem=10GB -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} gadget4/runsim.pbs
+    jidgad=$(qsub -N "job-g-$cosmology" -l select=$nsel:ncpus=$ncpus:mpiprocs=$ncpus:mem=10GB -v "simnm=$simnm,rund=$rund" -W depend=afterok:${jidics%.*} gadget4/runsim.pbs)
     fi
 fi
 

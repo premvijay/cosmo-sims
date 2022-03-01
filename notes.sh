@@ -18,6 +18,8 @@ rund=r1 z_in=24 bary=no softlen1=0.02 tstep=0.1 outlston=1 seed=1111 compgad=1 n
 
 rund=r41 z_in=49 bary=yes softlen1=0.02 tstep=0.02 outlston=1 seed=111111 compgad=1 ngenic=yes multi-jobs.sh 200 256 p18
 
+rund=r3 z_in=24 bary=no tstep=0.5 outlston=1 seed=1111 compgad=1 ngenic=no nsel=12 ncpus=8 multi-jobs.sh 600 512 lh3
+
 # An important finding is that Inclusive Halo mass calculation. Changing from 0 to 3 affect 200m, 200c, 500c but not Mvir
 # However changing from 2 to 3 affect only Mvir (hmf shifts up for 2)
 # On the other hand decreasing ncellfac tilts the hmf to be lower at high masses.
