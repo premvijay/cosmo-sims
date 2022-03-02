@@ -15,7 +15,7 @@ DOUBLEPRECISION=1                             # if activated and set to 1, use d
 DOUBLEPRECISION_FFTW                         # if set, carries out FFTs in double precision, otherwise single precision
 POWERSPEC_ON_OUTPUT                          # computes a matter power spectrum when the code writes a snapshot output
 NUMBER_OF_MPI_LISTENERS_PER_NODE=$nmpil           # set such that the number of MPI-ranks per node and listener is maller than MAX_NUMBER_OF_RANKS_WITH_SHARED_MEMORY
-MAX_NUMBER_OF_RANKS_WITH_SHARED_MEMORY=$ncpus    # default is 64, but can also be set to 32\n" > $1
+MAX_NUMBER_OF_RANKS_WITH_SHARED_MEMORY=32    # default is 64, but can also be set to 32\n" > $1
 
 if [ "$fofsub" = "yes" ]
 then
