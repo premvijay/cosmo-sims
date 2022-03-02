@@ -17,10 +17,16 @@ PBS_NTASKS=$(cat $PBS_NODEFILE | wc -l)
 echo $? | tee -a out.log
 file=$dir_snap/snapdir_0011/snapshot_011.0.hdf5
 
+iter=0
 while [ ! -f "$file" ];
 do
+  iter=$((iter+1))
+  if [ "$iter" -gt 5 ]; then
+      break
+  fi
+
   echo 're-running' | tee -a out.log;
-  sleep 3;
+  sleep 2;
   if [ ! -f "$dir_snap/snapdir_000/snapshot_000.0.hdf5" ];
   then
     echo starting from scratch
