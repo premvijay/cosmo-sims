@@ -18,6 +18,8 @@ echo $? | tee -a out.log
 file=$dir_snap/snapdir_007/snapshot_007.0.hdf5
 
 iter=0
+#mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 2 4 |& tee -a $dir_snap/out.log
+
 while [ ! -f "$file" ];
 do
   iter=$((iter+1))
