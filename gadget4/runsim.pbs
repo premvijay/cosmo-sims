@@ -15,7 +15,7 @@ cd $dir_sim
 PBS_NTASKS=$(cat $PBS_NODEFILE | wc -l)
 # mpirun -np $PBS_NTASKS -machinefile $PBS_NODEFILE $dir_sim/$rund/Gadget4 $dir_sim/param_$rund.txt 2 10 |& tee -a $dir_snap/out.log
 echo $? | tee -a out.log
-file=$dir_snap/snapdir_0011/snapshot_011.0.hdf5
+file=$dir_snap/snapdir_007/snapshot_007.0.hdf5
 
 iter=0
 while [ ! -f "$file" ];
