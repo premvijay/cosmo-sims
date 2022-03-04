@@ -95,6 +95,12 @@ if args.cosmo =='P18':
     cos_par_vals = (0.3063375, 0.6936625, 0.0484103, 0.6781, 0.9677, 0.815)
 elif args.cosmo=='WMAP7':
     cos_par_vals = (0.276, 0.724, 0.045, 0.7, 0.961, 0.811)
+elif args.cosmo=='lh1':
+    cos_par_vals = (0.3391, 0.6609, 0.05172, 0.6682, 0.9931, 0.8162)
+elif args.cosmo=='lh2':
+    cos_par_vals = (0.3503, 0.6497, 0.0505, 0.7522, 0.9703, 0.7802)
+elif args.cosmo=='lh6':
+    cos_par_vals = (0.3279, 0.6721, 0.04743, 0.6178, 0.9399, 0.8282)
 
 cos_pars = Munch()
 cos_pars.Om0, cos_pars.Ode0, cos_pars.Ob0, cos_pars.h, cos_pars.ns, cos_pars.sig8 = cos_par_vals
@@ -296,7 +302,8 @@ ax2.set_title(f"Matter power spectrum at different redshifts")
 ax2.legend()
 
 plt.tight_layout()
-
+# plt.show()
+# pdb.set_trace()
 fig1.savefig(os.path.join(plotsdir, f'{rundir_str:s}_{scheme}{theme:s}.pdf'))
 # fig1.savefig(os.path.join(plotsdir, f'{rundir_str:s}_{scheme}{theme:s}.png'))
 # fig1.savefig(os.path.join(plotsdir, f'single_snapshot_pk_{i:03d}{theme:s}.svg'))

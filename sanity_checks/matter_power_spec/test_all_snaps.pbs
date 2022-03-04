@@ -8,8 +8,8 @@ PBS_O_WORKDIR=$PWD
 cd $PBS_O_WORKDIR
 source ~/.bashrc
 conda activate conforg
-export simnm=L75_N1024_Cp18
-python matter_power_spec/test_with_models.py --simname ${simnm} --cosmo P18 --rundirs 'r1 r2 r3' --snap_i_list 5,7,9,11 --simdir /scratch/cprem/sims/ | tee -a out_file1.txt
+export simnm=L600_N512_Clh6
+python matter_power_spec/test_with_models.py --simname ${simnm} --cosmo lh6 --rundirs 'r1' --snap_i_list 4,5,6,7 --simdir /scratch/cprem/sims/ |& tee -a out_file1.txt
 # parallel --sshloginfile $PBS_NODEFILE -j 3 "cd $PBS_O_WORKDIR; source ~/.bashrc; conda activate conforg; python matter_power_spec/test_with_models.py --simname ${simnm} --cosmo P18 --rundirs {2} --snap_i_list {1} --simdir /scratch/cprem/sims/ | tee -a out_file1.txt" ::: 0,5,10,20 ::: 'r4 r5 r6 r7'
 # conda deactivate
 # ffmpeg -framerate 2 -start_number 51 -i plots/$simnm/hmf/${rund}_%03d.png -vf scale=2000:1400 -lossless 1 -y plots/$simnm/hmf_${rund}_evolve.webm
