@@ -86,7 +86,8 @@ box_size = snap.box_size #[0] / (3.08567758e24/ snap.Hubble_param)
 #     posd = h5file['PartType1']['Coordinates'][:]
 
 # posd = snap.positions(prtcl_type="Halo")
-posd = read_all_hdf5('Coordinates', 1, filepath_prefix)
+# posd = read_all_hdf5('Coordinates', 1, filepath_prefix)
+posd = read_positions_all_files(filepath_prefix)
 
 delta = assign_density(posd, box_size, args.grid_size, scheme=args.scheme)
 print('\n density assigned to main grid for snapshot {0:03d}'.format(args.snap_i))

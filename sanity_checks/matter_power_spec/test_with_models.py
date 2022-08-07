@@ -39,7 +39,7 @@ parser.add_argument('--light_snaps', type=int, default=1, help='save white bg im
 
 args = parser.parse_args()
 
-grid_size = 512
+grid_size = 1024
 scheme = 'TSC'
 # rundir = 'r1'
 interlaced = True
