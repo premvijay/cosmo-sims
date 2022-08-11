@@ -212,8 +212,8 @@ for index, i in enumerate(i_list[::-1]):
     # print(vars(pk_fit))
     # ax2.plot(kh_camb_nonlin, pk_fit.P(kh_camb_nonlin), linestyle='solid', color=darker(color), zorder=2)
 
-    lin_bin = np.linspace(np.sqrt(k_start*k_nyq),k_nyq, 30)
-    log_bin = np.logspace(np.log10(k_start),np.log10(np.sqrt(k_start*k_nyq)/1.5), 12)
+    lin_bin = np.linspace(np.sqrt(k_start*k_nyq),k_nyq, 50)
+    log_bin = np.logspace(np.log10(k_start),np.log10(np.sqrt(k_start*k_nyq)/1.2), 15)
     # merge_bin = np.concatenate([lin_bin,log_bin])
     # merge_bin.sort()power_spec['k'].iloc[1]
     merge_bin = np.union1d(lin_bin, log_bin)
