@@ -1,3 +1,4 @@
+#%%
 import numpy as np
 import pandas as pd
 import os
@@ -21,7 +22,8 @@ if args.params is None:
 else:
     params_list = [float(x) for x in args.params.split(',')]
 
-
+#%%
+# params_list = [0.306, 0.694, 0.0484, 0.678, 0.9677, 0.815]
 cos_pars = Munch()
 cos_pars.Om0, cos_pars.Ode0, cos_pars.Ob0, cos_pars.h, cos_pars.ns, cos_pars.sig8 = params_list
 
